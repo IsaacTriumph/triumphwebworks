@@ -53,12 +53,22 @@
 }
 
 /*
- * Subtle grain/noise texture, layered over the dark background instead of a
- * light paper image. Generated as an inline SVG turbulence filter so it stays
- * crisp at any viewport size with no extra asset requests.
+ * Paper grain texture, layered over the dark background instead of a light
+ * paper image. A single SVG turbulence layer generated inline (no image
+ * asset): feTurbulence's raw output is colored, semi-transparent, and
+ * clusters around mid-gray, so on its own it either reads as colored static
+ * or (once desaturated) nearly disappears under a blend mode. Fixing that
+ * takes three steps — desaturate to grayscale (real grain is tonal, not
+ * colored), force full alpha via feComponentTransfer (turbulence's alpha
+ * channel is itself noisy, which was quietly halving the effect), then push
+ * contrast so values actually swing toward black/white instead of hovering
+ * at the midpoint where `overlay` is a near no-op. A low baseFrequency keeps
+ * individual grain flecks a few pixels wide — high-frequency noise (many
+ * cycles per tile) reads as smooth gray fog once scaled or compressed.
  */
 .bg-grain {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.25' numOctaves='2' seed='7' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='saturate' values='0' result='g'/%3E%3CfeComponentTransfer in='g'%3E%3CfeFuncA type='linear' slope='0' intercept='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
-  background-size: 180px 180px;
+  background-size: 150px 150px;
+  filter: contrast(160%);
 }
