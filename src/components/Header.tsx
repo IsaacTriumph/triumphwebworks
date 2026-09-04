@@ -35,7 +35,7 @@ export default function Header() {
         <div className="hidden sm:block">
           <Link
             href="/contact"
-            className="inline-flex items-center rounded-md bg-cta px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-cta/90"
+            className="inline-flex items-center rounded-sm bg-cta px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-cta/90"
           >
             Get in Touch
           </Link>
@@ -72,7 +72,7 @@ export default function Header() {
           <Link
             href="/contact"
             onClick={() => setOpen(false)}
-            className="mt-2 inline-flex items-center justify-center rounded-md bg-cta px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-cta/90"
+            className="mt-2 inline-flex items-center justify-center rounded-sm bg-cta px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-cta/90"
           >
             Get in Touch
           </Link>

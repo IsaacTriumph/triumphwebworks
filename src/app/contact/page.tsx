@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 const fieldClasses =
-  "mt-2 w-full rounded-md border border-foreground/15 bg-surface px-4 py-3 text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent";
+  "mt-2 w-full rounded-sm border border-foreground/15 bg-surface px-4 py-3 text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent";
 
 export default function Contact() {
   return (
@@ -71,7 +71,7 @@ export default function Contact() {
         <div className="sm:col-span-2">
           <button
             type="submit"
-            className="rounded-md bg-cta px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-cta/90"
+            className="rounded-sm bg-cta px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-cta/90"
           >
             Submit placeholder
           </button>

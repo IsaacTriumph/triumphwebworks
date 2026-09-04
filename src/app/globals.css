@@ -3,7 +3,7 @@
 /*
  * Triumph Web Works design tokens.
  * Single source of truth for color, type, and radius — components should
- * consume these via Tailwind utilities (bg-background, text-cta, rounded-md, etc.)
+ * consume these via Tailwind utilities (bg-background, text-cta, rounded-sm, etc.)
  * rather than hardcoding hex values.
  */
 @theme inline {
@@ -11,7 +11,7 @@
   --color-background: #2b323c;
   --color-surface: #333c47;
   --color-foreground: #ffffff;
-  --color-muted: #7a7974;
+  --color-muted: #d6e4ec;
   --color-cta: #a84b30;
   --color-accent: #bce2e7;
   --color-warning: #a13544;

@@ -18,6 +18,12 @@ export const RADIUS = {
 /** Standard GSAP easing for all custom/illustrative animation. */
 export const EASE = "power2.out";
 
+/**
+ * The same power2.out curve as a plain (t) => t function, for animation
+ * systems that don't understand GSAP's named eases (e.g. Recharts).
+ */
+export const power2Out = (t: number) => 1 - (1 - t) * (1 - t);
+
 /** Animation durations, in seconds. */
 export const DURATION = {
   /** Icons, micro-interactions. */
@@ -35,7 +41,7 @@ export const COLORS = {
   background: "#2B323C",
   surface: "#333C47",
   foreground: "#ffffff",
-  muted: "#7A7974",
+  muted: "#D6E4EC",
   cta: "#A84B30",
   accent: "#BCE2E7",
   warning: "#A13544",

@@ -18,11 +18,11 @@ export default function About() {
       </p>
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2">
-        <div className="rounded-lg border border-foreground/10 bg-surface p-6">
+        <div className="rounded-sm border border-foreground/10 bg-surface p-6">
           <h2 className="text-xl">Subheading placeholder</h2>
           <p className="mt-2 text-sm text-foreground/70">Supporting copy placeholder.</p>
         </div>
-        <div className="rounded-lg border border-foreground/10 bg-surface p-6">
+        <div className="rounded-sm border border-foreground/10 bg-surface p-6">
           <h2 className="text-xl">Subheading placeholder</h2>
           <p className="mt-2 text-sm text-foreground/70">Supporting copy placeholder.</p>
         </div>
