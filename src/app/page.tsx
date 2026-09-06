@@ -4,6 +4,44 @@ import FunnelDiagram from "@/components/home/FunnelDiagram";
 import PainPointsBody from "@/components/home/PainPointsBody";
 import BenchmarkChart from "@/components/home/BenchmarkChart";
 import ValueProps from "@/components/home/ValueProps";
+import StatPlaque, { type StatPlaqueProps } from "@/components/home/StatPlaque";
+
+// TODO: placeholder content — replace each entry with real copy, numerals,
+// and a real source URL before shipping. See chat for what's needed.
+const STAT_PLAQUES: StatPlaqueProps[] = [
+  {
+    eyebrow: "Eyebrow placeholder 1",
+    numeral: "00%",
+    supportingText: "Supporting sentence placeholder describing this statistic.",
+    comparisonLines: ["Comparison line placeholder A", "Comparison line placeholder B"],
+    sourceHref: "#",
+    align: "left",
+  },
+  {
+    eyebrow: "Eyebrow placeholder 2",
+    numeral: "00%",
+    supportingText: "Supporting sentence placeholder describing this statistic.",
+    comparisonLines: ["Comparison line placeholder A", "Comparison line placeholder B"],
+    sourceHref: "#",
+    align: "right",
+  },
+  {
+    eyebrow: "Eyebrow placeholder 3",
+    numeral: "00%",
+    supportingText: "Supporting sentence placeholder describing this statistic.",
+    comparisonLines: ["Comparison line placeholder A", "Comparison line placeholder B"],
+    sourceHref: "#",
+    align: "left",
+  },
+  {
+    eyebrow: "Eyebrow placeholder 4",
+    numeral: "00%",
+    supportingText: "Supporting sentence placeholder describing this statistic.",
+    comparisonLines: ["Comparison line placeholder A", "Comparison line placeholder B"],
+    sourceHref: "#",
+    align: "right",
+  },
+];
 
 export const metadata: Metadata = {
   description:
@@ -20,7 +58,7 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-6 pt-20 pb-20 sm:px-8 sm:pt-28 sm:pb-28">
         <div className="grid gap-14 lg:grid-cols-2 lg:items-center">
           <div>
-            <p className="text-sm font-semibold text-cta sm:text-base">
+            <p className="text-sm font-semibold text-kicker sm:text-base">
               Stop Losing Customers to a Website That Was Never Built to Convert.
             </p>
             <h1 className="mt-4 text-4xl leading-tight sm:text-5xl">
@@ -64,6 +102,11 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28">
         <ValueProps />
       </section>
+
+      {/* Editorial stat plaques */}
+      {STAT_PLAQUES.map((plaque) => (
+        <StatPlaque key={plaque.eyebrow} {...plaque} />
+      ))}
 
       {/* Primary CTA */}
       <section className="mx-auto max-w-4xl px-6 pb-24 sm:px-8 sm:pb-32">

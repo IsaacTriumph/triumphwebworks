@@ -11,7 +11,7 @@ const fieldClasses =
 export default function Contact() {
   return (
     <section className="mx-auto max-w-4xl px-6 py-24 sm:px-8 sm:py-32">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cta">
+      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-kicker">
         Kicker placeholder
       </p>
       <h1 className="mt-4 text-4xl leading-tight sm:text-5xl">Heading placeholder</h1>

@@ -43,6 +43,7 @@ export const COLORS = {
   foreground: "#ffffff",
   muted: "#D6E4EC",
   cta: "#A84B30",
+  kicker: "#C15A3D",
   accent: "#BCE2E7",
   warning: "#A13544",
   success: "#4EC0C6",
