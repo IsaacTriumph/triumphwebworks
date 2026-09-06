@@ -1,44 +1,43 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import FunnelDiagram from "@/components/home/FunnelDiagram";
 import PainPointsBody from "@/components/home/PainPointsBody";
-import BenchmarkChart from "@/components/home/BenchmarkChart";
 import ValueProps from "@/components/home/ValueProps";
 import StatPlaque, { type StatPlaqueProps } from "@/components/home/StatPlaque";
 
-// TODO: placeholder content — replace each entry with real copy, numerals,
-// and a real source URL before shipping. See chat for what's needed.
 const STAT_PLAQUES: StatPlaqueProps[] = [
   {
-    eyebrow: "Eyebrow placeholder 1",
-    numeral: "00%",
-    supportingText: "Supporting sentence placeholder describing this statistic.",
-    comparisonLines: ["Comparison line placeholder A", "Comparison line placeholder B"],
-    sourceHref: "#",
+    eyebrow: "HOW MANY VISITORS ACTUALLY TAKE ACTION",
+    numeral: "4.9×",
+    supportingText:
+      "more visitors call, book, or buy — on the same traffic you're already paying for.",
+    comparisonLines: ["2.35% typical site", "11.45% top-performing site"],
+    sourceHref: "https://cropink.com/conversion-rate-optimization-statistics",
     align: "left",
   },
   {
-    eyebrow: "Eyebrow placeholder 2",
-    numeral: "00%",
-    supportingText: "Supporting sentence placeholder describing this statistic.",
-    comparisonLines: ["Comparison line placeholder A", "Comparison line placeholder B"],
-    sourceHref: "#",
+    eyebrow: "ONE CLEAR NEXT STEP, NOT FIVE COMPETING ONES",
+    numeral: "+28%",
+    supportingText:
+      "more visitors act when you give them a single clear button instead of many.",
+    comparisonLines: ["10.5% with 5+ buttons or links", "13.5% with one clear button"],
+    sourceHref: "https://vwo.com/blog/landing-page-statistics/",
     align: "right",
   },
   {
-    eyebrow: "Eyebrow placeholder 3",
-    numeral: "00%",
-    supportingText: "Supporting sentence placeholder describing this statistic.",
-    comparisonLines: ["Comparison line placeholder A", "Comparison line placeholder B"],
-    sourceHref: "#",
+    eyebrow: "SHOWING VS. TELLING WHAT YOU DO",
+    numeral: "+65%",
+    supportingText:
+      "more visitors act when a short video explains what you do, before they ask.",
+    comparisonLines: ["2.9% with no video", "4.8% with a short video"],
+    sourceHref: "https://www.aberdeen.com/cmo-essentials/39-essential-content-marketing-facts/",
     align: "left",
   },
   {
-    eyebrow: "Eyebrow placeholder 4",
-    numeral: "00%",
-    supportingText: "Supporting sentence placeholder describing this statistic.",
-    comparisonLines: ["Comparison line placeholder A", "Comparison line placeholder B"],
-    sourceHref: "#",
+    eyebrow: "THE FORM BETWEEN A VISITOR AND YOU",
+    numeral: "+120%",
+    supportingText: "more people finish your contact form when it asks less of them.",
+    comparisonLines: ["26% finish an 11-question form", "68.4% finish a 4-question form"],
+    sourceHref: "https://www.reform.app/blog/research-how-layout-affects-form-completion-rates",
     align: "right",
   },
 ];
@@ -55,25 +54,19 @@ export default function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 pt-20 pb-20 sm:px-8 sm:pt-28 sm:pb-28">
-        <div className="grid gap-14 lg:grid-cols-2 lg:items-center">
-          <div>
-            <p className="text-sm font-semibold text-kicker sm:text-base">
-              Stop Losing Customers to a Website That Was Never Built to Convert.
-            </p>
-            <h1 className="mt-4 text-4xl leading-tight sm:text-5xl">
-              Your website should be your best salesperson not a brochure.
-            </h1>
-            <p className="mt-6 text-lg text-foreground/80">
-              Get more qualified leads from the visitors you already pay for, a steady
-              stream of inquiries that actually become clients, a lower cost per
-              acquisition, and a position where you are the obvious choice before the
-              prospect even reaches out. No more losing opportunities to competitors with
-              brochure websites.
-            </p>
-          </div>
-          <FunnelDiagram />
-        </div>
+      <section className="mx-auto max-w-3xl px-6 pt-20 pb-20 sm:px-8 sm:pt-28 sm:pb-28">
+        <p className="text-sm font-semibold text-kicker sm:text-base">
+          Stop Losing Customers to a Website That Was Never Built to Convert.
+        </p>
+        <h1 className="mt-4 text-4xl leading-tight sm:text-5xl">
+          Your website should be your best salesperson not a brochure.
+        </h1>
+        <p className="mt-6 text-lg text-foreground/80">
+          Get more qualified leads from the visitors you already pay for, a steady stream
+          of inquiries that actually become clients, a lower cost per acquisition, and a
+          position where you are the obvious choice before the prospect even reaches out.
+          No more losing opportunities to competitors with brochure websites.
+        </p>
       </section>
 
       {/* Pain points */}
@@ -87,10 +80,6 @@ export default function Home() {
           <PainPointsBody />
         </div>
 
-        <div className="mt-16 max-w-xl">
-          <BenchmarkChart />
-        </div>
-
         <div className="mt-12">
           <Link href="/contact" className={ctaButtonClasses}>
             Book a Free Conversion Audit
@@ -98,15 +87,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Value props */}
-      <section className="mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28">
-        <ValueProps />
-      </section>
-
       {/* Editorial stat plaques */}
       {STAT_PLAQUES.map((plaque) => (
         <StatPlaque key={plaque.eyebrow} {...plaque} />
       ))}
+
+      {/* Value props */}
+      <section className="mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28">
+        <ValueProps />
+      </section>
 
       {/* Primary CTA */}
       <section className="mx-auto max-w-4xl px-6 pb-24 sm:px-8 sm:pb-32">
