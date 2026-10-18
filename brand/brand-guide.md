@@ -69,7 +69,7 @@ Texture.
 - Linen: `public/brand/textures/linen.png`, a 256px mid-grey tile from the approved swatch, applied with `background-blend-mode: overlay` over the paper colour. It shades the paper without changing its colour.
 - Texture goes on dark paper only. Never on white or light paper.
 - For tools without blend modes, use the pre-blended tiles: `linen-dark-tile.png` (#222830), `linen-surface-tile.png` (#2A313B), `linen-cutout-tile.png` (#1B2027).
-- To rebuild the tile: take the approved swatch's alpha channel, centre it on mid-grey (128) and scale the deviation by 0.42.
+- To rebuild the tile: take the approved swatch (`public/brand/textures/linen-source-swatch.png`)'s alpha channel, centre it on mid-grey (128) and scale the deviation by 0.42.
 
 ## 3. Colour tokens
 
