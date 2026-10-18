@@ -10,6 +10,8 @@ Assets and references for the paper design system. No site code depends on these
 | `brand/affinity/` | Affinity Publisher kit: `.ase` palette, hex list, cover textures with bleed (Letter, A4), card texture sheets, logos. |
 | `brand/reference/kit/index.html` | Component kit and homepage draft. Open in a browser (loads Tailwind, Lucide, GSAP from CDNs). |
 | `brand/reference/documents/index.html` | Document style sample: dark textured cover and heading cards, plain white body. |
+| `brand/brand-guide.md` | Brand guide v2.0 (Registry key BRAND_TRIUMPH). Replaces v1.3 in the Project files. |
+| `brand/brand-tokens.css` | Exact tokens, paper variables and component CSS from the kit. |
 
 Live versions of the references:
 - Component kit: https://claude.ai/artifact/CArWvVrBPLTTJyAHknogg4
