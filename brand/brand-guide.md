@@ -174,8 +174,24 @@ Library: GSAP. Easing: power2.out (closing uses power2.in). Respect prefers-redu
 - Export: PDF/X-4, include bleed, fonts embedded.
 - Pages can't print bleed: dark covers print with a white border, so keep dark covers for emailed PDFs.
 
+Document components (built in `brand/reference/documents/index.html`, CSS in `brand/document-components.css`):
+
+| Component | Treatment |
+|---|---|
+| Key message card | Raised dark card (#2A313B + linen): kicker, one Forum line in white, muted detail |
+| Statement band | Full-width base dark stock (#222830 + linen), one Forum statement in white |
+| Numbered steps | Plain white; large Forum numbers; 1px crease above each step |
+| Quote card | Raised dark card: quote in Forum, name in white, role in muted |
+| Option cards | Raised dark cards; the recommended one carries a small tag laid on its top edge (CTA fill #A84B30, white caps, copper edge). No glow or coloured border. |
+| Step flow | Plain white; steps under 1px creases joined by 1.5px arrow icons in ink |
+| Bar chart | Plain white; context bars #9AA1AB, highlighted bar #006E77, every value labelled in ink, source line in muted. One axis, one series. |
+| Image row | Images set into cut-outs (#1B2027 + linen, edge on the inside top) |
+| Footnotes | Plain white; 11pt-equivalent muted text under a crease; reference marks in the white-document kicker colour |
+
+Chart colours on white documents: highlight #006E77 (validated against the context grey for colour-blind separation); context #9AA1AB is below 3:1 on white, so every bar carries its value label. On dark cards, charts use accent #BCE2E7 for the highlight.
+
 ## Change log
 - 2026-09-29: v1.3, positioning approved.
 - 2026-10-13: moved from claude/brand-guide.md to brands/triumph/; content unchanged.
 - 2026-10-17: moved from brand-guide-triumph-v1.md to brand-guide.md; old status and location lines replaced by the stamp line and this change log; content unchanged.
-- 2026-10-18: v2.0, paper design system. Background changed from #2B323C to #222830; added top (#2A313B), control (#343C48) and cut-out (#1B2027) layers; error text changed from #FF6850 to #FF6E42; accent limited to data; added material, motion, focus, components and documents sections; logos added; Editorial Stat Plaque retired. Positioning and market rules unchanged.
+- 2026-10-18: v2.0, paper design system. Background changed from #2B323C to #222830; added top (#2A313B), control (#343C48) and cut-out (#1B2027) layers; error text changed from #FF6850 to #FF6E42; accent limited to data; added material, motion, focus, components and documents sections; logos added; Editorial Stat Plaque retired; document components and white-document chart colours added. Positioning and market rules unchanged.
