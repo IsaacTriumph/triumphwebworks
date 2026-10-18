@@ -1,0 +1,1472 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
+<title>Triumph Component Kit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Forum&family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: 'var(--bg)', surface: 'var(--surface)', fg: 'var(--fg)', muted: 'var(--muted)',
+          cta: 'var(--cta)', kicker: 'var(--kicker)', accent: 'var(--accent)',
+          error: 'var(--error)', ok: 'var(--ok)', line: 'var(--line)'
+        },
+        fontFamily: {
+          display: ['Forum', 'Georgia', '"Times New Roman"', 'serif'],
+          sans: ['Inter', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif']
+        },
+        borderRadius: { DEFAULT: '2px' }
+      }
+    }
+  }
+</script>
+<style>
+  /* Layout: one 72rem editorial column on dark linen stock. Three material moves only:
+     raised board (cards, header, buttons), blind deboss (inputs, media slots, step numbers), crease (dividers).
+     Brand guide v1.3 tokens. Raised board uses the page stock colour so muted and kicker text keep 4.5:1. */
+  :root {
+    --bg: #222830;      /* base stock, darkened so every text colour passes 4.5:1 on all three surfaces */
+    --surface: #2A313B; /* top layer: pieces of the same board laid on the base (cards, header) */
+    --control: #343C48; /* fourth layer: small pieces laid on cards or the base (secondary buttons, tooltips). White text only. */
+    --recess: #1B2027;  /* bottom layer: seen only where the base is cut away */
+    --sheet: var(--surface);
+    --cutout: var(--recess);
+    --fg: #ffffff;
+    --muted: #9A9994;
+    --cta: #A84B30;
+    --kicker: #D9844B;
+    --accent: #BCE2E7;
+    --error: #FF6E42; /* vermilion: 5.35:1 on base, 4.72:1 on cards, 5.9:1 on cut-outs */
+    --ok: #4EC0C6;
+    --line: rgba(255, 255, 255, 0.12);
+    --line-strong: rgba(255, 255, 255, 0.28);
+    --spec: #8FA3B3;
+    --radius: 2px;
+    --card-pad: clamp(2rem, 3.5vw, 3rem);  /* 32px phone → 48px wide */
+    --card-tight: .75rem;
+    --focus-w: 1px;     /* focus ink rule; a true hairline on high-density screens (below) */
+    --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* power2.out */
+    --stroke: 1.5px;
+
+    /* Linen: greyscale tile centred on mid-grey, so `overlay` shades the stock without shifting its colour. */
+    --linen: url("assets/linen.png"); /* 256px seamless tile from the reference swatch, centred on mid-grey */
+
+    /* PAPER RULE. Four layers of identical board: bottom (--recess), base (--bg), top (--surface), control (--control).
+       Each layer is a shade lighter than the one it sits on, so a button on a card always shows.
+       Every edge is the same: a 1px line slightly darker than what's beneath, then a subtle shadow.
+       Raised pieces cast it downward; cut-outs show it inverted on the inside top wall.
+       No highlights, no reflections, no thick edges. Only the edge colour may change (e.g. the CTA). */
+    --paper-edge: rgba(0,0,0,.22);
+    --paper-shadow: 0 2px 3px -1px rgba(0,0,0,.15);
+    --paper-raised: 0 1px 0 var(--paper-edge), var(--paper-shadow);
+    --paper-cut: inset 0 1px 0 var(--paper-edge), inset var(--paper-shadow);
+    --paper-pressed: 0 0 0 transparent;
+    --paper-lifted: 0 3px 5px -1px rgba(0,0,0,.2); /* hover: the piece lifts 1px as a finger nears it */
+    --cta-edge: #7A3622;
+
+    color-scheme: dark;
+  }
+  @media (min-resolution: 2dppx) { :root { --focus-w: .5px; } }
+  html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; }
+  body {
+    background-color: var(--bg);
+    background-image: var(--linen), radial-gradient(ellipse 120% 70% at 50% 0%, #29303A 0%, var(--bg) 55%, #1C2128 100%);
+    background-size: 256px 256px, auto;
+    background-attachment: scroll, fixed;
+    background-blend-mode: overlay, normal;
+    color: var(--fg);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+    z-index: 60; background: var(--surface);
+  }
+
+  /* Material primitives */
+  .stock { background-image: var(--linen); background-size: 256px 256px; background-blend-mode: overlay; }
+  .board { background-color: var(--surface); border-radius: var(--radius); box-shadow: var(--paper-raised); }
+  .recess { background-color: var(--recess); border-radius: var(--radius); box-shadow: var(--paper-cut); }
+
+  /* Text + icon cards. Two placements: a loose sheet on the stock, or a window cut into it. */
+  .sheet {
+    background-color: var(--sheet); border-radius: var(--radius);
+    box-shadow: var(--paper-raised);
+  }
+  .cutout {
+    background-color: var(--cutout); border-radius: var(--radius);
+    box-shadow: var(--paper-cut);
+  }
+  .tcard { display: flex; flex-direction: column; gap: var(--card-tight); padding: var(--card-pad); min-width: 0; }
+  .tcard > svg.lucide:first-child { margin-bottom: calc(var(--card-pad) - var(--card-tight)); }
+  .tcard svg.lucide { width: 1.75rem; height: 1.75rem; color: var(--fg); }
+  .tcard-title { font-family: Forum, Georgia, "Times New Roman", serif; font-size: 1.5rem; line-height: 1.2; text-wrap: balance; }
+  .tcard-row { flex-direction: row; align-items: flex-start; gap: var(--card-tight); column-gap: 1.25rem; }
+  .tcard-row svg.lucide { flex-shrink: 0; margin-top: .125rem; margin-bottom: 0 !important; }
+  /* Etched icon: same blind-stamp ink as the step numbers. Decorative only; the title carries the meaning. */
+  .tcard svg.lucide.etched, svg.lucide.etched { color: rgba(0,0,0,.32); width: 3rem; height: 3rem; stroke-width: 1.5px;
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,.08)) drop-shadow(0 -1px 0 rgba(0,0,0,.35)); }
+  .crease { border-top: 1px solid rgba(0,0,0,.32); }
+
+  .wrap {
+    max-width: 72rem; margin-inline: auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  @media (min-width: 768px) { .wrap { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); } }
+
+  .section { padding-block: clamp(5rem, 11vw, 9rem); }
+  .section + .section { border-top: 1px solid rgba(0,0,0,.32); }
+
+  /* Type: ink pressed into stock */
+  .display { font-family: Forum, Georgia, "Times New Roman", serif; font-weight: 400; text-wrap: balance; letter-spacing: -0.005em; text-shadow: 0 1px 0 rgba(0,0,0,.22); }
+  .h1 { font-size: clamp(2.75rem, 7vw, 5.25rem); line-height: 1.02; }
+  .h2 { font-size: clamp(2rem, 4.4vw, 3.25rem); line-height: 1.08; }
+  .h3 { font-size: 1.625rem; line-height: 1.2; }
+  .lede { font-size: clamp(1.0625rem, 1.6vw, 1.25rem); line-height: 1.6; color: var(--muted); max-width: 36rem; }
+  .body-copy { color: var(--muted); max-width: 34rem; }
+  .kicker { font-size: .75rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--kicker); }
+  .small { font-size: .875rem; }
+  .numeral { font-family: Forum, Georgia, serif; font-size: clamp(6rem, 16vw, 11rem); line-height: .85; font-variant-numeric: lining-nums tabular-nums; text-shadow: 0 1px 0 rgba(0,0,0,.22); }
+  /* Cut-in mark: dark fill, a shadowed top wall above, and the far wall of the cut catching a little light below.
+     The only permitted light in the system, because it's the paper's own cut edge, not a reflection. */
+  .blind { font-family: Forum, Georgia, serif; color: rgba(0,0,0,.32); text-shadow: 0 1px 0 rgba(255,255,255,.08), 0 -1px 0 rgba(0,0,0,.35); }
+  .logo { filter: drop-shadow(0 1px 0 rgba(0,0,0,.22)); }
+
+  /* Buttons: 4px board chips that press down */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .625rem;
+    min-height: 3rem; padding: 0 1.375rem; border-radius: var(--radius);
+    font-size: .9375rem; font-weight: 600; letter-spacing: .01em; line-height: 1;
+    background-image: var(--linen); background-size: 256px 256px; background-blend-mode: overlay;
+    transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+    text-decoration: none; white-space: nowrap; margin-bottom: 2px;
+  }
+  .btn svg { width: 1.125rem; height: 1.125rem; }
+  .btn-primary { background-color: var(--cta); color: #fff; box-shadow: 0 1px 0 var(--cta-edge), var(--paper-shadow); text-shadow: 0 1px 0 rgba(0,0,0,.15); }
+  .btn-primary:hover, .btn-primary.is-hover { transform: translateY(-1px); box-shadow: 0 1px 0 var(--cta-edge), var(--paper-lifted); }
+  .btn-primary:active, .btn-primary.is-press { box-shadow: var(--paper-pressed); }
+  .btn-secondary { background-color: var(--control); color: var(--fg); box-shadow: var(--paper-raised); }
+  .btn-secondary:hover, .btn-secondary.is-hover { transform: translateY(-1px); box-shadow: 0 1px 0 var(--paper-edge), var(--paper-lifted); }
+  .btn-secondary:active, .btn-secondary.is-press { box-shadow: var(--paper-pressed); }
+  .btn:active, .btn.is-press { transform: translateY(1px); transition-duration: .1s; }
+  .btn-secondary[aria-pressed="true"] { transform: translateY(1px); box-shadow: var(--paper-pressed); background-color: var(--recess); }
+  .cutout .btn-secondary { background-color: var(--surface); } /* inside a cut-out, a button is one layer up, not two */
+  .btn-sm { min-height: 2.5rem; padding: 0 1rem; font-size: .875rem; }
+  .link {
+    color: var(--fg); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1.5px;
+    text-underline-offset: .3em; text-decoration-color: var(--line-strong);
+    transition: text-decoration-color .3s var(--ease);
+  }
+  .link:hover { text-decoration-color: var(--fg); }
+
+  /* Focus is printed, not lit: a 1px white ink rule. Links get a heavier underline instead. */
+  :focus-visible { outline: var(--focus-w) solid var(--fg); outline-offset: 3px; border-radius: var(--radius); }
+  a:not(.btn):not(:has(img)):focus-visible { outline: none; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .3em; text-decoration-color: var(--fg); }
+  /* Button focus: pressed into a 4px cut-out well (bottom layer, inverted paper edge), ringed by a 1px white ink rule for 3:1 contrast. */
+  .btn:focus-visible, .btn.is-focus {
+    transform: translateY(1px);
+    box-shadow: 0 0 0 4px var(--recess), 0 -1px 0 4px var(--paper-edge);
+    outline: var(--focus-w) solid var(--fg); outline-offset: 4px;
+  }
+
+  /* Header: a raised strip of board */
+  .site-header {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
+    background-color: var(--surface); margin-bottom: 2px;
+  }
+  .nav-link { font-size: .875rem; color: var(--muted); padding-block: .5rem; position: relative; transition: color .3s var(--ease); }
+  .nav-link:hover { color: var(--fg); }
+  .nav-link[aria-current="page"] { color: var(--fg); }
+  .nav-link[aria-current="page"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--stroke); background: var(--fg); }
+
+  /* Mobile menu: a sheet that slides down from under the header strip */
+  .drawer { position: absolute; left: 0; right: 0; top: 100%; height: calc(100dvh - 4rem - env(safe-area-inset-top, 0px)); overflow: hidden; pointer-events: none; }
+  .drawer-sheet { margin-left: auto; width: min(20rem, 85vw); height: 100%; overflow-y: auto; pointer-events: auto;
+    padding-right: env(safe-area-inset-right, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+    background-color: var(--surface); box-shadow: -1px 0 0 var(--paper-edge), -2px 0 3px -1px rgba(0,0,0,.15); }
+  .drawer-sheet .wrap { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .drawer-sheet li + li { border-top: 1px solid rgba(0,0,0,.32); }
+  /* Desktop submenu: a top-layer sheet pulled down from under the header; the header's edge falls on it */
+  .nav-trigger { display: inline-flex; align-items: center; gap: .375rem; font: inherit; font-size: .875rem; cursor: pointer; }
+  .nav-trigger svg { width: 1rem; height: 1rem; }
+  .nav-trigger[aria-expanded="true"] { color: var(--fg); }
+  .nav-trigger[aria-expanded="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--stroke); background: var(--fg); }
+  .mega { position: absolute; left: 0; right: 0; top: 100%; overflow: hidden; padding-bottom: 16px; pointer-events: none; }
+  .mega-sheet { pointer-events: auto; background-color: var(--surface);
+    box-shadow: var(--paper-raised); }
+  /* The header's own edge, drawn as a layer on top so it also falls across sheets sliding out from under it */
+  .header-edge { position: absolute; left: 0; right: 0; top: 100%; height: 4px; z-index: 2; pointer-events: none;
+    background: linear-gradient(to bottom, var(--paper-edge) 0 1px, rgba(0,0,0,.1) 1px, transparent 4px); }
+  .mega, .drawer { z-index: 1; }
+  .mega-card { display: flex; flex-direction: column; gap: .75rem; padding: 1.25rem; border-radius: var(--radius);
+    background-color: var(--control); box-shadow: var(--paper-raised); color: var(--fg);
+    transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+  .mega-card:hover { transform: translateY(-1px); box-shadow: 0 1px 0 var(--paper-edge), var(--paper-lifted); }
+  .mega-card:active { transform: translateY(1px); box-shadow: var(--paper-pressed); transition-duration: .1s; }
+  .mega-card svg { width: 1.5rem; height: 1.5rem; }
+  .mega-card .name { font-family: Forum, Georgia, serif; font-size: 1.375rem; line-height: 1.2; }
+  @media (max-width: 767px) { .mega { display: none !important; } }
+
+  .skip { position: absolute; left: 16px; top: -100px; z-index: 100; background: var(--fg); color: var(--bg); padding: .75rem 1rem; border-radius: var(--radius); font-weight: 600; }
+  .skip:focus { top: calc(env(safe-area-inset-top, 0px) + 12px); }
+
+  /* Card */
+  /* Card spacing: one value for the edge padding and the gap between groups; a tight value inside a group. */
+  .card { padding: var(--card-pad); }
+
+  /* Media slot (1:1, cut into the stock) */
+  .plaque-media { aspect-ratio: 1 / 1; width: 100%; max-width: 100%; display: grid; place-items: center; color: var(--muted); }
+  .compare { border-left: var(--stroke) solid var(--accent); padding-left: 1rem; }
+  .source { position: relative; display: inline-block; }
+  .source-btn { font-size: .75rem; color: var(--muted); text-decoration: underline; text-underline-offset: .25em; text-decoration-thickness: 1px; }
+  .source-btn:hover { color: var(--fg); }
+  .source-tip {
+    position: absolute; right: 0; bottom: calc(100% + 12px); width: min(18rem, 80vw);
+    background-color: var(--control); box-shadow: var(--paper-raised); border-radius: var(--radius);
+    padding: .75rem .875rem; font-size: .75rem; line-height: 1.5; color: var(--fg);
+    pointer-events: none; transform: translateY(100%); clip-path: inset(-12px -12px 100% -12px);
+    transition: transform .35s var(--ease), clip-path .35s var(--ease);
+  }
+  .source:hover .source-tip, .source:focus-within .source-tip { transform: none; clip-path: inset(-12px -12px -12px -12px); }
+
+  svg.lucide { stroke-width: var(--stroke); }
+
+  /* Form: fields are debossed into the stock */
+  .field-label { font-size: .875rem; font-weight: 600; }
+  .input {
+    width: 100%; min-height: 3rem; padding: 0 1rem; border-radius: var(--radius);
+    background-color: var(--recess); box-shadow: var(--paper-cut);
+    color: var(--fg); border: 0; font: inherit;
+    transition: box-shadow .3s var(--ease);
+  }
+  .input::placeholder { color: var(--muted); opacity: 1; }
+  .input:focus { box-shadow: var(--paper-cut); outline: var(--focus-w) solid var(--fg); outline-offset: 2px; }
+  .input[aria-invalid="true"] { box-shadow: var(--paper-cut), 0 0 0 1px var(--error); }
+  .error-text { color: var(--error); }
+
+  .swatch { aspect-ratio: 16 / 9; border-radius: var(--radius); max-width: 100%; margin-bottom: 4px;
+    box-shadow: var(--paper-raised); }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .75rem; }
+
+  /* Spec overlay (design-review tool, not part of the brand) */
+  .spec-on [data-spec] { outline: 1px dashed rgba(143, 163, 179, .45); outline-offset: -1px; position: relative; }
+  .spec-on .site-header[data-spec] { position: sticky; }
+  .spec-on [data-spec]::after {
+    content: attr(data-spec); position: absolute; top: 6px; right: 6px; z-index: 5;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 10.5px; letter-spacing: .02em;
+    color: var(--spec); background: rgba(37, 43, 52, .92); border: 1px dashed rgba(143, 163, 179, .5);
+    padding: 2px 6px; border-radius: 2px; pointer-events: none;
+  }
+  .spec-toggle {
+    position: fixed; z-index: 70;
+    right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px;
+    background: #20252D; color: var(--spec); border: 1px dashed rgba(143, 163, 179, .6);
+    padding: 8px 12px; border-radius: 2px;
+  }
+
+  /* Market tabs: index-card tabs on a raised board */
+  .tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-top: 4px; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    display: inline-flex; align-items: center; gap: .5rem; white-space: nowrap; position: relative; top: 3px;
+    padding: .875rem 1.25rem; border-radius: var(--radius) var(--radius) 0 0;
+    background-color: var(--recess); color: var(--muted); font-size: .875rem; font-weight: 600;
+    box-shadow: var(--paper-cut);
+    transition: color .3s var(--ease), top .3s var(--ease);
+  }
+  .tab svg { width: 1.125rem; height: 1.125rem; }
+  .tab:hover { color: var(--fg); }
+  .tab[aria-selected="true"] { top: 0; z-index: 1; margin-bottom: -1px; padding-bottom: calc(.875rem + 4px); background-color: var(--surface); color: var(--fg); box-shadow: none; }
+  .tab-panel { border-top-left-radius: 0; }
+
+  /* ---------- Form controls (all cut into the stock) ---------- */
+  .select { appearance: none; -webkit-appearance: none; padding-right: 2.75rem; cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>"), var(--linen); background-repeat: no-repeat, repeat;
+    background-position: right 1rem center, 0 0; background-size: 1.125rem, 256px 256px; background-blend-mode: normal, overlay; }
+  .textarea { min-height: 8rem; padding-block: .875rem; resize: vertical; line-height: 1.6; }
+  .choice { display: flex; align-items: flex-start; gap: .75rem; cursor: pointer; }
+  .choice input { appearance: none; -webkit-appearance: none; flex-shrink: 0; width: 1.25rem; height: 1.25rem; margin-top: .15rem;
+    background-color: var(--recess); box-shadow: var(--paper-cut); border-radius: var(--radius); cursor: pointer;
+    background-repeat: no-repeat; background-position: center; background-size: .875rem; }
+  .choice input[type="radio"] { border-radius: 50%; }
+  .choice input[type="checkbox"]:checked { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>"); }
+  .choice input[type="radio"]:checked { background-image: radial-gradient(circle, var(--fg) 0 30%, transparent 34%); background-size: 100%; }
+  .choice input:focus-visible { outline: var(--focus-w) solid var(--fg); outline-offset: 3px; }
+  .field-error { color: var(--error); font-size: .875rem; display: flex; align-items: center; gap: .5rem; }
+  .field-error svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+  .ok-text { color: var(--ok); }
+
+  /* ---------- FAQ: raised strip that presses down to reveal a cut-out answer ---------- */
+  .faq { display: flex; flex-direction: column; gap: 1rem; }
+  .faq summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+    padding: 1.25rem var(--card-pad); background-color: var(--surface); border-radius: var(--radius); box-shadow: var(--paper-raised);
+    font-family: Forum, Georgia, serif; font-size: 1.375rem; line-height: 1.3; transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary svg { width: 1.25rem; height: 1.25rem; flex-shrink: 0; transition: transform .3s var(--ease); }
+  .faq details[open] summary { transform: translateY(1px); box-shadow: var(--paper-pressed); border-radius: var(--radius) var(--radius) 0 0; }
+  .faq details[open] summary svg { transform: rotate(45deg); }
+  .faq .answer { overflow: hidden; }
+  .faq .answer { background-color: var(--recess); box-shadow: var(--paper-cut); border-radius: 0 0 var(--radius) var(--radius);
+    padding: var(--card-pad); color: var(--muted); }
+  .faq .answer p { max-width: 60ch; }
+
+  /* ---------- Testimonial ---------- */
+  .quote-text { font-family: Forum, Georgia, serif; font-size: clamp(1.375rem, 2.2vw, 1.75rem); line-height: 1.35; text-wrap: pretty; }
+  .stars { display: flex; gap: .25rem; }
+  .stars svg { width: 1rem; height: 1rem; }
+
+  /* ---------- Before / after result ---------- */
+  .result { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 1.25rem; }
+  .result .num { font-family: Forum, Georgia, serif; line-height: .9; font-variant-numeric: lining-nums tabular-nums; }
+  .result .before { font-size: clamp(2.25rem, 4vw, 3rem); color: var(--muted); }
+  .result .after { font-size: clamp(3rem, 6vw, 4.5rem); }
+  .result .divider { width: var(--stroke); align-self: stretch; background: var(--accent); }
+
+  /* ---------- Sticky mobile CTA bar: a top-layer strip, its edge cast upward ---------- */
+  .mobile-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 55;
+    background-color: var(--surface); box-shadow: 0 -1px 0 var(--paper-edge), 0 -2px 3px -1px rgba(0,0,0,.15);
+    padding-top: .75rem; padding-bottom: calc(.75rem + env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .mobile-cta:not(.is-preview) { transform: translateY(calc(100% + 4px)); transition: transform .45s var(--ease); }
+  .mobile-cta.is-shown { transform: none; }
+  .mobile-cta-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .mobile-cta.is-preview { position: static; border-radius: var(--radius); box-shadow: var(--paper-raised); padding-bottom: .75rem; }
+  @media (max-width: 767px) {
+    body { padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)); }
+    .spec-toggle { bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
+  }
+  @media (min-width: 768px) { .mobile-cta:not(.is-preview) { display: none; } }
+
+  /* ---------- Icon library ---------- */
+  .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: 1rem; }
+  .icon-tile { display: flex; flex-direction: column; align-items: center; gap: .75rem; padding: 1.25rem .5rem 1rem; text-align: center; }
+  .icon-tile svg { width: 2rem; height: 2rem; }
+  .icon-tile span { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .6875rem; color: var(--muted); overflow-wrap: anywhere; }
+  .icon-tile svg.cut { color: rgba(0,0,0,.32); filter: drop-shadow(0 1px 0 rgba(255,255,255,.08)) drop-shadow(0 -1px 0 rgba(0,0,0,.35)); }
+
+  /* Market tabs become an accordion on phones */
+  @media (max-width: 767px) { #markets .tabs, #markets [role="tabpanel"] { display: none !important; } }
+  @media (min-width: 768px) { .market-acc { display: none; } }
+  .faq summary > span svg { width: 1.25rem; height: 1.25rem; transform: none !important; }
+
+  /* ---------- Breadcrumbs ---------- */
+  .crumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-size: .8125rem; color: var(--muted); }
+  .crumbs a { color: var(--muted); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: .3em; }
+  .crumbs a:hover { color: var(--fg); text-decoration-color: var(--fg); }
+  .crumbs svg { width: .875rem; height: .875rem; }
+  .crumbs [aria-current="page"] { color: var(--fg); }
+
+  /* ---------- Badges: small control-layer chips, white text only ---------- */
+  .badge { display: inline-flex; align-items: center; gap: .4rem; min-height: 1.75rem; padding: 0 .625rem; border-radius: var(--radius);
+    background-color: var(--control); box-shadow: var(--paper-raised); color: var(--fg); font-size: .75rem; font-weight: 600; letter-spacing: .02em; white-space: nowrap; }
+  .badge svg { width: .875rem; height: .875rem; }
+  .badge-cut { background-color: var(--recess); box-shadow: var(--paper-cut); }
+  .badge .dot { width: .4375rem; height: .4375rem; border-radius: 50%; background: var(--ok); }
+
+  /* ---------- Notice slip: a raised strip for information and success ---------- */
+  .notice { display: flex; align-items: flex-start; gap: .875rem; padding: 1rem 1.25rem; border-radius: var(--radius);
+    background-color: var(--surface); box-shadow: var(--paper-raised); }
+  .notice > svg { width: 1.25rem; height: 1.25rem; flex-shrink: 0; margin-top: .125rem; }
+  .notice-title { font-weight: 600; }
+  .notice-success .notice-title, .notice-success > svg { color: var(--ok); }
+
+  /* ---------- Footer ---------- */
+  .footer-col h2 { font-size: .75rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--kicker); }
+  .footer-col ul { display: flex; flex-direction: column; gap: .625rem; margin-top: 1rem; }
+  .footer-col a { color: var(--muted); }
+  .footer-col a:hover { color: var(--fg); text-decoration: underline; text-underline-offset: .3em; }
+  .copy-row { display: flex; align-items: center; gap: .5rem; }
+  .copy-btn { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: var(--radius);
+    background-color: var(--control); box-shadow: var(--paper-raised); color: var(--fg); transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+  .copy-btn:hover { transform: translateY(-1px); box-shadow: 0 1px 0 var(--paper-edge), var(--paper-lifted); }
+  .copy-btn:active { transform: translateY(1px); box-shadow: var(--paper-pressed); }
+  .copy-btn svg { width: .875rem; height: .875rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+    .btn:active, .btn.is-press { transform: none; }
+  }
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<button class="spec-toggle" id="spec-toggle" type="button" aria-pressed="false">Component names: off</button>
+
+<div class="page" id="page">
+
+  <!-- ===== Header ===== -->
+  <header class="site-header stock" data-spec="SiteHeader">
+    <div class="wrap flex items-center justify-between gap-6 h-16 md:h-20">
+      <a href="#main" class="shrink-0 block" aria-label="Triumph Web Works, home"><img src="assets/logo-light.svg" alt="Triumph Web Works" width="3896" height="1010" class="logo block h-7 md:h-9 w-auto"></a>
+      <nav aria-label="Primary" class="hidden md:flex items-center gap-8">
+        <button class="nav-link nav-trigger" type="button" id="mega-btn" aria-expanded="false" aria-controls="mega">Markets <i data-lucide="chevron-down"></i></button>
+        <a class="nav-link" href="#process" aria-current="page">Process</a>
+        <a class="nav-link" href="#results">Results</a>
+        <a class="nav-link" href="#faq">FAQ</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <a class="btn btn-primary btn-sm !mb-0" href="#contact">Get in Touch</a>
+        <button id="menu-btn" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded text-fg" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+          <i data-lucide="menu" class="icon-open w-6 h-6"></i>
+          <i data-lucide="x" class="icon-close w-6 h-6" hidden></i>
+        </button>
+      </div>
+    </div>
+    <div class="header-edge" aria-hidden="true"></div>
+    <!-- Desktop submenu: a sheet that slides down from under the header strip -->
+    <div id="mega" class="mega" hidden>
+      <div class="mega-sheet stock">
+        <div class="wrap pt-8 pb-8 grid grid-cols-4 gap-6" id="mega-cards"></div>
+        <div class="crease">
+          <div class="wrap py-5 flex items-center justify-between gap-6 small">
+            <span class="text-muted">Not sure which fits? The audit works for any service business.</span>
+            <a class="link" href="#markets">Compare markets</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-nav" class="drawer md:hidden" hidden>
+      <nav aria-label="Primary mobile" class="drawer-sheet stock">
+        <ul class="wrap py-4 flex flex-col">
+          <li><a class="block py-3 text-lg display" href="#markets">Markets</a></li>
+          <li><a class="block py-3 text-lg display" href="#process">Process</a></li>
+          <li><a class="block py-3 text-lg display" href="#results">Results</a></li>
+          <li><a class="block py-3 text-lg display" href="#faq">FAQ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+
+    <!-- ===== Hero ===== -->
+    <section class="section" data-spec="Hero">
+      <div class="wrap">
+        <p class="kicker">More sales, bookings and enquiries from the traffic you already have</p>
+        <h1 class="display h1 mt-6 max-w-[15ch]">Websites built around the numbers that matter.</h1>
+        <p class="lede mt-8">Sales for Shopify brands. Direct bookings for hotels and tour operators. Qualified enquiries for law firms and HVAC shops. Every page is judged by one of those numbers.</p>
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <a class="btn btn-primary" href="#contact">Book a conversion audit <i data-lucide="arrow-right"></i></a>
+          <a class="btn btn-secondary" href="#process">See how it works</a>
+        </div>
+        <p class="small text-muted mt-10 max-w-md">Starts with a fixed-fee audit. Your site is rebuilt only if it can't be fixed.</p>
+      </div>
+    </section>
+
+    <!-- ===== Value props ===== -->
+    <section class="section" data-spec="ValueGrid cols=3">
+      <div class="wrap">
+        <p class="kicker">What gets fixed first</p>
+        <h2 class="display h2 mt-6 max-w-[20ch]">Three fixes that move the numbers before anything else.</h2>
+        <ul class="mt-16 grid gap-12 md:grid-cols-3 md:gap-10">
+          <li class="crease pt-8">
+            <i data-lucide="receipt" class="w-7 h-7 text-fg"></i>
+            <h3 class="display h3 mt-6">Prices people can see</h3>
+            <p class="text-muted mt-[var(--card-tight)]">Fees, rates and offers shown up front. Fewer price-check calls, more ready buyers.</p>
+          </li>
+          <li class="crease pt-8">
+            <i data-lucide="calendar-check" class="w-7 h-7 text-fg"></i>
+            <h3 class="display h3 mt-6">Booking without a phone call</h3>
+            <p class="text-muted mt-[var(--card-tight)]">Consultations, rooms and service calls booked online, at any hour your office is closed.</p>
+          </li>
+          <li class="crease pt-8">
+            <i data-lucide="message-square-quote" class="w-7 h-7 text-fg"></i>
+            <h3 class="display h3 mt-6">Proof beside the button</h3>
+            <p class="text-muted mt-[var(--card-tight)]">Reviews placed where the decision happens, not buried on an About page.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== Markets (tabs) ===== -->
+    <section class="section" id="markets" data-spec="MarketTabs">
+      <div class="wrap">
+        <p class="kicker">Who it's for</p>
+        <h2 class="display h2 mt-6 max-w-[20ch]">Four markets. Each with its own number to move.</h2>
+        <!-- Rendered from MARKETS in the script: tabs from 768px up, an accordion below -->
+        <div class="tabs mt-16" role="tablist" aria-label="Markets" id="market-tabs"></div>
+        <div id="market-panels"></div>
+        <div class="faq market-acc mt-12" id="market-acc"></div>
+      </div>
+    </section>
+
+    <!-- ===== Process ===== -->
+    <section class="section" id="process" data-spec="ProcessSteps">
+      <div class="wrap">
+        <p class="kicker">How an engagement runs</p>
+        <h2 class="display h2 mt-6 max-w-[18ch]">Audit first. Then fix. Then prove it.</h2>
+        <ol class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 pb-3">
+          <li class="board stock card">
+            <span class="blind text-6xl leading-none" aria-hidden="true">01</span>
+            <h3 class="display h3 mt-[var(--card-pad)]">Audit</h3>
+            <p class="text-muted small mt-[var(--card-tight)]">Fixed fee. Find where orders, bookings and enquiries leak.</p>
+          </li>
+          <li class="board stock card">
+            <span class="blind text-6xl leading-none" aria-hidden="true">02</span>
+            <h3 class="display h3 mt-[var(--card-pad)]">Fix or renovate</h3>
+            <p class="text-muted small mt-[var(--card-tight)]">The biggest leaks first, scoped from the audit.</p>
+          </li>
+          <li class="board stock card">
+            <span class="blind text-6xl leading-none" aria-hidden="true">03</span>
+            <h3 class="display h3 mt-[var(--card-pad)]">Measure</h3>
+            <p class="text-muted small mt-[var(--card-tight)]">Sales, bookings and enquiries tracked against the audit baseline.</p>
+          </li>
+          <li class="board stock card">
+            <span class="blind text-6xl leading-none" aria-hidden="true">04</span>
+            <h3 class="display h3 mt-[var(--card-pad)]">Optimize monthly</h3>
+            <p class="text-muted small mt-[var(--card-tight)]">A retainer, offered only once the results are proven.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== Engagements (cards) ===== -->
+    <section class="section" id="engagements" data-spec="OfferCards">
+      <div class="wrap">
+        <p class="kicker">Engagements</p>
+        <h2 class="display h2 mt-6 max-w-[20ch]">One fixed-fee audit. Everything after it is scoped from the findings.</h2>
+        <div class="mt-16 grid gap-8 lg:grid-cols-3 pb-3">
+          <article class="board stock card flex flex-col" data-spec="Card">
+            <p class="kicker">Start here</p>
+            <h3 class="display text-[2rem] leading-tight mt-[var(--card-tight)]">Conversion Audit</h3>
+            <p class="text-muted mt-[var(--card-tight)]">Where your site loses sales, bookings or enquiries, and the order to fix them in.</p>
+            <ul class="mt-[var(--card-pad)] mb-[var(--card-pad)] flex flex-col gap-[var(--card-tight)] small">
+              <li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 shrink-0 mt-0.5"></i><span>Review of the pages that earn the money</span></li>
+              <li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 shrink-0 mt-0.5"></i><span>Leaks ranked by revenue at stake</span></li>
+              <li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 shrink-0 mt-0.5"></i><span>Walkthrough call and written plan</span></li>
+            </ul>
+            <div class="mt-auto pt-[var(--card-pad)] flex flex-wrap items-center justify-between gap-4 crease">
+              <span class="mono text-muted">[Fee · currency]</span>
+              <a class="btn btn-primary btn-sm" href="#contact">Book an audit <i data-lucide="arrow-right"></i></a>
+            </div>
+          </article>
+          <article class="board stock card flex flex-col" data-spec="Card">
+            <p class="kicker">Scoped from the audit</p>
+            <h3 class="display text-[2rem] leading-tight mt-[var(--card-tight)]">Fix Sprint or Renovation</h3>
+            <p class="text-muted mt-[var(--card-tight)]">The leaks fixed in order of value. A full rebuild only when no workable site exists.</p>
+            <ul class="mt-[var(--card-pad)] mb-[var(--card-pad)] flex flex-col gap-[var(--card-tight)] small">
+              <li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 shrink-0 mt-0.5"></i><span>Fixes shipped in priority order</span></li>
+              <li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 shrink-0 mt-0.5"></i><span>Before-and-after numbers for each</span></li>
+              <li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 shrink-0 mt-0.5"></i><span>Shopify replatforming when needed</span></li>
+            </ul>
+            <div class="mt-auto pt-[var(--card-pad)] flex flex-wrap items-center justify-between gap-4 crease">
+              <span class="mono text-muted">[Fee · currency]</span>
+              <a class="btn btn-secondary btn-sm" href="#contact">Ask about scope</a>
+            </div>
+          </article>
+          <article class="board stock card flex flex-col" data-spec="Card">
+            <p class="kicker">Once results are proven</p>
+            <h3 class="display text-[2rem] leading-tight mt-[var(--card-tight)]">Monthly Optimization</h3>
+            <p class="text-muted mt-[var(--card-tight)]">A retainer that keeps testing and improving the pages that convert.</p>
+            <ul class="mt-[var(--card-pad)] mb-[var(--card-pad)] flex flex-col gap-[var(--card-tight)] small">
+              <li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 shrink-0 mt-0.5"></i><span>Monthly test and fix cycle</span></li>
+              <li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 shrink-0 mt-0.5"></i><span>Report on sales, bookings and leads</span></li>
+              <li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 shrink-0 mt-0.5"></i><span>Cancel any month</span></li>
+            </ul>
+            <div class="mt-auto pt-[var(--card-pad)] flex flex-wrap items-center justify-between gap-4 crease">
+              <span class="mono text-muted">[Fee · currency]</span>
+              <a class="btn btn-secondary btn-sm" href="#contact">Ask about retainers</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Before / after results ===== -->
+    <section class="section" id="results" data-spec="ResultCards">
+      <div class="wrap">
+        <p class="kicker">Results · sample figures</p>
+        <h2 class="display h2 mt-6 max-w-[20ch]">The number before. The number after.</h2>
+        <div class="mt-16 grid gap-6 md:grid-cols-3">
+          <article class="board stock card flex flex-col gap-[var(--card-pad)]">
+            <p class="kicker">Shopify brand</p>
+            <div class="result" role="img" aria-label="Conversion rate: 1.2% before, 2.1% after">
+              <div><p class="small text-muted">Before</p><p class="num before mt-[var(--card-tight)]">1.2<span class="text-[.5em]">%</span></p></div>
+              <span class="divider" aria-hidden="true"></span>
+              <div><p class="small text-muted">After</p><p class="num after mt-[var(--card-tight)]">2.1<span class="text-[.5em]">%</span></p></div>
+            </div>
+            <div class="crease pt-[var(--card-pad)] flex items-end justify-between gap-4">
+              <p class="small text-muted max-w-[28ch]">Store conversion rate, 90 days before and after the fix sprint.</p>
+              <span class="source"><button class="source-btn" type="button">Source</button><span class="source-tip stock" role="tooltip">Sample figures for layout only. Replace with a client result and its source.</span></span>
+            </div>
+          </article>
+          <article class="board stock card flex flex-col gap-[var(--card-pad)]">
+            <p class="kicker">Boutique hotel</p>
+            <div class="result" role="img" aria-label="Direct booking share: 34% before, 52% after">
+              <div><p class="small text-muted">Before</p><p class="num before mt-[var(--card-tight)]">34<span class="text-[.5em]">%</span></p></div>
+              <span class="divider" aria-hidden="true"></span>
+              <div><p class="small text-muted">After</p><p class="num after mt-[var(--card-tight)]">52<span class="text-[.5em]">%</span></p></div>
+            </div>
+            <div class="crease pt-[var(--card-pad)] flex items-end justify-between gap-4">
+              <p class="small text-muted max-w-[28ch]">Share of bookings made direct instead of through OTAs.</p>
+              <span class="source"><button class="source-btn" type="button">Source</button><span class="source-tip stock" role="tooltip">Sample figures for layout only. Replace with a client result and its source.</span></span>
+            </div>
+          </article>
+          <article class="board stock card flex flex-col gap-[var(--card-pad)]">
+            <p class="kicker">HVAC shop</p>
+            <div class="result" role="img" aria-label="Booked calls per month: 41 before, 67 after">
+              <div><p class="small text-muted">Before</p><p class="num before mt-[var(--card-tight)]">41<span class="text-[.5em]"></span></p></div>
+              <span class="divider" aria-hidden="true"></span>
+              <div><p class="small text-muted">After</p><p class="num after mt-[var(--card-tight)]">67<span class="text-[.5em]"></span></p></div>
+            </div>
+            <div class="crease pt-[var(--card-pad)] flex items-end justify-between gap-4">
+              <p class="small text-muted max-w-[28ch]">Service calls booked online or by phone, monthly average.</p>
+              <span class="source"><button class="source-btn" type="button">Source</button><span class="source-tip stock" role="tooltip">Sample figures for layout only. Replace with a client result and its source.</span></span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Testimonials ===== -->
+    <section class="section" id="reviews" data-spec="TestimonialCards">
+      <div class="wrap">
+        <p class="kicker">In their words · placeholder</p>
+        <h2 class="display h2 mt-6 max-w-[20ch]">What owners say after the numbers move.</h2>
+        <div class="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <figure class="board stock card flex flex-col gap-[var(--card-pad)] md:col-span-2">
+            <div class="flex items-center justify-between gap-4">
+              <i data-lucide="quote" class="etched !w-10 !h-10"></i>
+              <div class="stars" role="img" aria-label="Rated 5 out of 5"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div>
+            </div>
+            <blockquote class="quote-text">[Client quote. One or two sentences on the result, in the client's own words.]</blockquote>
+            <figcaption class="crease pt-[var(--card-pad)] flex flex-col gap-[var(--card-tight)]">
+              <span class="font-semibold">[Client name]</span>
+              <span class="small text-muted">[Role], [Business] · [Market]</span>
+            </figcaption>
+          </figure>
+          <figure class="board stock card flex flex-col gap-[var(--card-pad)]">
+            <div class="flex items-center justify-between gap-4">
+              <i data-lucide="quote" class="etched !w-10 !h-10"></i>
+              <div class="stars" role="img" aria-label="Rated 5 out of 5"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div>
+            </div>
+            <blockquote class="quote-text">[Client quote. One or two sentences on the result, in the client's own words.]</blockquote>
+            <figcaption class="crease pt-[var(--card-pad)] flex flex-col gap-[var(--card-tight)]">
+              <span class="font-semibold">[Client name]</span>
+              <span class="small text-muted">[Role], [Business] · [Market]</span>
+            </figcaption>
+          </figure>
+          <figure class="board stock card flex flex-col gap-[var(--card-pad)]">
+            <div class="flex items-center justify-between gap-4">
+              <i data-lucide="quote" class="etched !w-10 !h-10"></i>
+              <div class="stars" role="img" aria-label="Rated 5 out of 5"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div>
+            </div>
+            <blockquote class="quote-text">[Client quote. One or two sentences on the result, in the client's own words.]</blockquote>
+            <figcaption class="crease pt-[var(--card-pad)] flex flex-col gap-[var(--card-tight)]">
+              <span class="font-semibold">[Client name]</span>
+              <span class="small text-muted">[Role], [Business] · [Market]</span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="section" id="faq" data-spec="FaqAccordion">
+      <div class="wrap grid gap-12 md:grid-cols-12">
+        <div class="md:col-span-4">
+          <p class="kicker">Questions before you book</p>
+          <h2 class="display h2 mt-6">Straight answers.</h2>
+          <p class="body-copy mt-6">Still unsure? <a class="link" href="#book">Ask in the form</a> and get a reply within one business day.</p>
+        </div>
+        <div class="faq md:col-span-8 min-w-0">
+          <details open>
+            <summary>What does the audit cost?<i data-lucide="plus"></i></summary>
+            <div class="answer stock"><p>[Fixed fee and currency]. The fee is set before work starts and doesn't change with what the audit finds.</p></div>
+          </details>
+          <details>
+            <summary>Do I need a new website?<i data-lucide="plus"></i></summary>
+            <div class="answer stock"><p>Usually not. Most sites need their leaks fixed, not replacing. A rebuild is only scoped when there's no workable site to fix.</p></div>
+          </details>
+          <details>
+            <summary>How long does the audit take?<i data-lucide="plus"></i></summary>
+            <div class="answer stock"><p>[Duration]. You get a written plan and a walkthrough call when it's done.</p></div>
+          </details>
+          <details>
+            <summary>Which businesses is this for?<i data-lucide="plus"></i></summary>
+            <div class="answer stock"><p>Shopify brands, small law firms, independent hotels and tour operators, and owner-run HVAC shops.</p></div>
+          </details>
+          <details>
+            <summary>What happens after the audit?<i data-lucide="plus"></i></summary>
+            <div class="answer stock"><p>You choose. Take the plan and run with it, book a fix sprint, or scope a renovation. There's no obligation to continue.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Booking form ===== -->
+    <section class="section" id="book" data-spec="BookingForm">
+      <div class="wrap grid gap-12 md:grid-cols-12">
+        <div class="md:col-span-4">
+          <p class="kicker">Book a conversion audit</p>
+          <h2 class="display h2 mt-6">Tell me about the site.</h2>
+          <p class="body-copy mt-6">Two minutes to fill in. You'll get a reply with a fixed quote and a start date.</p>
+          <ul class="mt-8 flex flex-col gap-[var(--card-tight)] small">
+            <li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 shrink-0"></i><span>Fixed fee, agreed up front</span></li>
+            <li class="flex gap-3"><i data-lucide="check" class="w-5 h-5 shrink-0"></i><span>No obligation after the audit</span></li>
+          </ul>
+        </div>
+        <form id="book-form" class="board stock card md:col-span-8 min-w-0 grid gap-[var(--card-pad)] sm:grid-cols-2" novalidate>
+          <div class="flex flex-col gap-2">
+            <label class="field-label" for="b-name">Your name</label>
+            <input class="input stock" id="b-name" name="name" autocomplete="name" required>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="field-label" for="b-email">Work email</label>
+            <input class="input stock" id="b-email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="field-label" for="b-site">Website</label>
+            <input class="input stock" id="b-site" name="site" type="url" placeholder="https://" required>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="field-label" for="b-market">Business type</label>
+            <select class="input select" id="b-market" name="market" required>
+              <option value="">Choose one</option>
+              <option>Shopify brand</option><option>Law firm</option><option>Hotel or tour operator</option><option>HVAC</option><option>Something else</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-2 sm:col-span-2">
+            <label class="field-label" for="b-msg">What should the site do better? <span class="text-muted font-normal">(optional)</span></label>
+            <textarea class="input textarea stock" id="b-msg" name="msg" placeholder="e.g. More direct bookings in shoulder season"></textarea>
+          </div>
+          <fieldset class="flex flex-col gap-3 sm:col-span-2">
+            <legend class="field-label mb-3">Best way to reach you</legend>
+            <div class="flex flex-wrap gap-x-8 gap-y-3">
+              <label class="choice"><input type="radio" name="reach" value="email" checked><span>Email</span></label>
+              <label class="choice"><input type="radio" name="reach" value="phone"><span>Phone</span></label>
+            </div>
+          </fieldset>
+          <label class="choice sm:col-span-2 small text-muted"><input type="checkbox" name="list" id="b-list"><span>Send me the one-page conversion checklist as well.</span></label>
+          <div class="sm:col-span-2 crease pt-[var(--card-pad)] flex flex-wrap items-center justify-between gap-4">
+            <p class="small text-muted" id="book-status" role="status">Demo form. Nothing is sent.</p>
+            <button class="btn btn-primary" type="submit">Request my audit <i data-lucide="arrow-right"></i></button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== CTA band ===== -->
+    <section class="section" id="contact" data-spec="CtaBand">
+      <div class="wrap grid md:grid-cols-12 gap-10 items-end">
+        <div class="md:col-span-8 min-w-0">
+          <h2 class="display h1 max-w-[16ch]">Find out what your website is costing you.</h2>
+          <p class="lede mt-8">A fixed-fee audit shows where sales, bookings and enquiries leak, and what to fix first.</p>
+        </div>
+        <div class="md:col-span-4 md:justify-self-end">
+          <a class="btn btn-primary" href="#contact">Book a conversion audit <i data-lucide="arrow-right"></i></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="crease" data-spec="SiteFooter">
+    <div class="wrap py-16 grid gap-12 md:grid-cols-12">
+      <div class="md:col-span-4 flex flex-col gap-6">
+        <img src="assets/logo-light.svg" alt="Triumph Web Works" width="3896" height="1010" class="logo block h-10 w-auto self-start">
+        <p class="small text-muted max-w-[32ch]">Websites built around the numbers that matter: sales, direct bookings and qualified leads.</p>
+        <a class="btn btn-primary btn-sm self-start" href="#book">Book a conversion audit</a>
+      </div>
+      <div class="footer-col md:col-span-2">
+        <h2>Markets</h2>
+        <ul class="small"><li><a href="#markets">Shopify brands</a></li><li><a href="#markets">Law firms</a></li><li><a href="#markets">Hotels &amp; tours</a></li><li><a href="#markets">HVAC</a></li></ul>
+      </div>
+      <div class="footer-col md:col-span-2">
+        <h2>Studio</h2>
+        <ul class="small"><li><a href="#process">Process</a></li><li><a href="#results">Results</a></li><li><a href="#engagements">Engagements</a></li><li><a href="#faq">FAQ</a></li></ul>
+      </div>
+      <div class="footer-col md:col-span-4">
+        <h2>Contact</h2>
+        <ul class="small">
+          <li class="copy-row"><span class="text-fg select-all" id="ft-email">[email address]</span><button class="copy-btn" type="button" data-copy="ft-email" aria-label="Copy email address"><i data-lucide="copy"></i></button></li>
+          <li class="copy-row"><span class="text-fg select-all" id="ft-phone">[phone number]</span><button class="copy-btn" type="button" data-copy="ft-phone" aria-label="Copy phone number"><i data-lucide="copy"></i></button></li>
+          <li class="text-muted">[City, province] · working with clients across Canada and the US</li>
+        </ul>
+        <p class="small text-muted mt-3" role="status" id="copy-status"></p>
+      </div>
+    </div>
+    <div class="crease">
+      <div class="wrap py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 small text-muted">
+        <span>© 2026 Triumph Web Works</span>
+        <nav aria-label="Legal" class="flex gap-6"><a href="#main" class="hover:text-fg">Privacy</a><a href="#main" class="hover:text-fg">Terms</a></nav>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== Component library (not part of the homepage) ===== -->
+  <div id="components" class="crease">
+    <section class="section" aria-labelledby="comp-h">
+      <div class="wrap">
+        <p class="mono" style="color:var(--spec)">COMPONENT LIBRARY · not part of the homepage</p>
+        <h2 id="comp-h" class="display h2 mt-4">Components for inner pages</h2>
+        <p class="body-copy mt-4">Hero variant, page header, card system, badges, notice slips and the mobile CTA bar. Everything above the footer is the homepage.</p>
+      </div>
+    </section>
+
+    <!-- ===== Hero: split with media ===== -->
+    <section class="section" data-spec="Hero variant=split">
+      <div class="wrap grid gap-12 md:grid-cols-12 items-center">
+        <div class="md:col-span-7 min-w-0">
+          <p class="kicker">Hero · split variant · placeholder copy</p>
+          <h2 class="display h1 mt-6 max-w-[14ch]">More direct bookings. Fewer OTA fees.</h2>
+          <p class="lede mt-8">A booking path built for independent hotels, measured by the share of rooms booked direct.</p>
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <a class="btn btn-primary" href="#book">Book a conversion audit <i data-lucide="arrow-right"></i></a>
+            <a class="btn btn-secondary" href="#results">See results</a>
+          </div>
+          <div class="mt-10 flex flex-wrap gap-3">
+            <span class="badge"><i data-lucide="bed-double"></i>Hotels</span>
+            <span class="badge"><i data-lucide="map"></i>Tour operators</span>
+          </div>
+        </div>
+        <div class="md:col-span-5 min-w-0">
+          <div class="plaque-media recess stock"><span class="mono">1:1 media slot</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Inner page header ===== -->
+    <section class="section" data-spec="PageHeader">
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="#main">Home</a></li>
+            <li aria-hidden="true"><i data-lucide="chevron-right"></i></li>
+            <li><a href="#markets">Markets</a></li>
+            <li aria-hidden="true"><i data-lucide="chevron-right"></i></li>
+            <li><span aria-current="page">Law firms</span></li>
+          </ol>
+        </nav>
+        <p class="kicker mt-10">Inner page header · placeholder copy</p>
+        <h2 class="display h1 mt-6 max-w-[16ch]">Websites for family and estate law firms.</h2>
+        <p class="lede mt-8">Intake that sorts serious enquiries, online consultation booking, and fees explained before the first call.</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <span class="badge badge-cut">Family law</span>
+          <span class="badge badge-cut">Estate law</span>
+          <span class="badge badge-cut">Alberta</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Card system ===== -->
+    <section class="section" id="cards" data-spec="CardSystem">
+      <div class="wrap">
+        <p class="kicker">Card system · placeholder copy</p>
+        <h2 class="display h2 mt-6 max-w-[22ch]">Two ways to set a card on the page.</h2>
+        <p class="body-copy mt-6">Laid on top as a loose sheet, or cut into the stock. Same text and icon layouts in both.</p>
+        <div class="mt-16" data-spec="Card variant=sheet">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="display h3">Raised sheet</h3>
+            <p class="mono text-muted">top layer · --paper-raised</p>
+          </div>
+          <div class="mt-8 grid gap-6 md:grid-cols-3">
+          <article class="sheet stock tcard">
+            <i data-lucide="file-search"></i>
+            <div>
+              <p class="kicker">Start here</p>
+              <h4 class="tcard-title mt-2">Fixed-fee audit</h4>
+            </div>
+            <p class="text-muted">Every leak in the path to purchase, ranked by what it costs you.</p>
+          </article>
+          <article class="sheet stock tcard">
+            <i data-lucide="list-ordered"></i>
+            <div>
+              <p class="kicker">Scoped from the audit</p>
+              <h4 class="tcard-title mt-2">Fixes in priority order</h4>
+            </div>
+            <p class="text-muted">The biggest leaks first. Each fix shipped with its before-and-after numbers.</p>
+          </article>
+          <article class="sheet stock tcard">
+            <i data-lucide="line-chart"></i>
+            <div>
+              <p class="kicker">Once results are proven</p>
+              <h4 class="tcard-title mt-2">Monthly optimization</h4>
+            </div>
+            <p class="text-muted">A test-and-fix cycle on the pages that earn the money.</p>
+          </article>
+          </div>
+          <div class="mt-6 grid gap-6 md:grid-cols-2">
+          <article class="sheet stock tcard tcard-row">
+            <i data-lucide="shopping-bag"></i>
+            <div class="min-w-0">
+              <h4 class="tcard-title text-xl">Shopify B2B wholesale</h4>
+              <p class="text-muted small mt-1">Trade customers order online, at their own prices.</p>
+            </div>
+          </article>
+          <article class="sheet stock tcard tcard-row">
+            <i data-lucide="calendar-check"></i>
+            <div class="min-w-0">
+              <h4 class="tcard-title text-xl">Online booking</h4>
+              <p class="text-muted small mt-1">Consultations, rooms and service calls booked at any hour.</p>
+            </div>
+          </article>
+          </div>
+        </div>
+        <div class="mt-16" data-spec="Card variant=cutout">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="display h3">Cut-out</h3>
+            <p class="mono text-muted">bottom layer · --paper-cut</p>
+          </div>
+          <div class="mt-8 grid gap-6 md:grid-cols-3">
+          <article class="cutout stock tcard">
+            <i data-lucide="receipt"></i>
+            <div>
+              <h4 class="tcard-title">Prices up front</h4>
+            </div>
+            <p class="text-muted">Fees, rates and offers on the page. Fewer price-check calls.</p>
+          </article>
+          <article class="cutout stock tcard">
+            <i data-lucide="message-square-quote"></i>
+            <div>
+              <h4 class="tcard-title">Proof beside the button</h4>
+            </div>
+            <p class="text-muted">Reviews placed where the decision happens.</p>
+          </article>
+          <article class="cutout stock tcard">
+            <i data-lucide="gauge"></i>
+            <div>
+              <h4 class="tcard-title">Measured, not guessed</h4>
+            </div>
+            <p class="text-muted">Every enquiry tracked back to the page that earned it.</p>
+          </article>
+          </div>
+          <div class="mt-6 grid gap-6 md:grid-cols-2">
+          <article class="cutout stock tcard tcard-row">
+            <i data-lucide="scale"></i>
+            <div class="min-w-0">
+              <h4 class="tcard-title text-xl">Law firms</h4>
+              <p class="text-muted small mt-1">Intake, online booking and fee clarity.</p>
+            </div>
+          </article>
+          <article class="cutout stock tcard tcard-row">
+            <i data-lucide="bed-double"></i>
+            <div class="min-w-0">
+              <h4 class="tcard-title text-xl">Hotels and tours</h4>
+              <p class="text-muted small mt-1">Direct bookings over OTAs, with the best-rate message.</p>
+            </div>
+          </article>
+          </div>
+        </div>
+
+        <div class="mt-16" data-spec="Card icon=etched">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="display h3">Etched icons</h3>
+            <p class="mono text-muted">svg.etched · same ink as step numbers</p>
+          </div>
+          <div class="mt-8 grid gap-6 md:grid-cols-3">
+          <article class="sheet stock tcard">
+            <i data-lucide="file-search" class="etched"></i>
+            <div>
+              <p class="kicker">Start here</p>
+              <h4 class="tcard-title mt-2">Fixed-fee audit</h4>
+            </div>
+            <p class="text-muted">Every leak in the path to purchase, ranked by what it costs you.</p>
+          </article>
+          <article class="sheet stock tcard">
+            <i data-lucide="list-ordered" class="etched"></i>
+            <div>
+              <p class="kicker">Scoped from the audit</p>
+              <h4 class="tcard-title mt-2">Fixes in priority order</h4>
+            </div>
+            <p class="text-muted">The biggest leaks first, each with before-and-after numbers.</p>
+          </article>
+          <article class="cutout stock tcard">
+            <i data-lucide="line-chart" class="etched"></i>
+            <div>
+              <p class="kicker">Once results are proven</p>
+              <h4 class="tcard-title mt-2">Monthly optimization</h4>
+            </div>
+            <p class="text-muted">A test-and-fix cycle on the pages that earn the money.</p>
+          </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Badges & notices ===== -->
+    <section class="section" data-spec="Badges + NoticeSlips">
+      <div class="wrap grid gap-16 md:grid-cols-2">
+        <div class="min-w-0">
+          <p class="kicker">Badges</p>
+          <h2 class="display h3 mt-4">Small labels for markets, status and categories.</h2>
+          <div class="mt-8 flex flex-col gap-6">
+            <div>
+              <p class="mono text-muted">raised · control layer</p>
+              <div class="mt-3 flex flex-wrap gap-3">
+                <span class="badge"><i data-lucide="shopping-bag"></i>Shopify</span>
+                <span class="badge"><i data-lucide="scale"></i>Law</span>
+                <span class="badge"><i data-lucide="bed-double"></i>Hotels</span>
+                <span class="badge"><i data-lucide="thermometer"></i>HVAC</span>
+              </div>
+            </div>
+            <div>
+              <p class="mono text-muted">cut-in · bottom layer</p>
+              <div class="mt-3 flex flex-wrap gap-3">
+                <span class="badge badge-cut">Case study</span>
+                <span class="badge badge-cut">5 min read</span>
+                <span class="badge badge-cut">Updated Oct 2026</span>
+              </div>
+            </div>
+            <div>
+              <p class="mono text-muted">status · success dot, white label</p>
+              <div class="mt-3 flex flex-wrap gap-3">
+                <span class="badge"><span class="dot" aria-hidden="true"></span>Booking audits for [Month]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="min-w-0">
+          <p class="kicker">Notice slips</p>
+          <h2 class="display h3 mt-4">A strip of paper for things worth knowing.</h2>
+          <div class="mt-8 flex flex-col gap-6">
+            <div class="notice stock" role="note">
+              <i data-lucide="info"></i>
+              <div><p class="notice-title">Audits start within [x] business days</p><p class="small text-muted mt-1">Information. White icon, muted detail.</p></div>
+            </div>
+            <div class="notice notice-success stock" role="status">
+              <i data-lucide="circle-check"></i>
+              <div><p class="notice-title">Request received</p><p class="small text-muted mt-1">Success. Teal title and icon, muted detail.</p></div>
+            </div>
+            <p class="small text-muted">Errors never use a slip. They stay as vermilion text under the field.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Sticky mobile CTA (preview) ===== -->
+    <section class="section" data-spec="MobileCtaBar">
+      <div class="wrap">
+        <p class="kicker">Mobile CTA bar</p>
+        <p class="body-copy mt-4">Pinned to the bottom of the screen on phones only. Preview at desktop width:</p>
+        <div class="mt-8 max-w-sm">
+          <div class="mobile-cta is-preview stock"><div class="mobile-cta-inner"><span class="small font-semibold">Fixed-fee audit</span><span class="btn btn-primary btn-sm !mb-0">Book now</span></div></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== Kit reference ===== -->
+  <section id="kit" class="section crease" aria-labelledby="kit-h">
+    <div class="wrap">
+      <p class="mono" style="color:var(--spec)">HANDOFF REFERENCE · not part of the site</p>
+      <h2 id="kit-h" class="display h2 mt-4">Component kit v3 · brand guide 1.3</h2>
+
+      <!-- Material -->
+      <h3 class="display h3 mt-16">Material</h3>
+      <p class="body-copy mt-3">Three layers of the same linen board. Top pieces sit on the base; cut-outs show the bottom layer. One edge everywhere: a 1px darker line, then a subtle shadow, inverted for cut-outs.</p>
+      <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-5 pb-3">
+        <figure>
+          <div class="board stock h-32"></div>
+          <figcaption class="mt-5 small"><b>Top layer · raised</b><br><span class="text-muted">#2A313B · cards, header, tab panels · --paper-raised</span></figcaption>
+        </figure>
+        <figure>
+          <div class="sheet stock h-32"></div>
+          <figcaption class="mt-5 small"><b>Top layer · text + icon cards</b><br><span class="text-muted">Buttons use the same rule; only the CTA edge is copper</span></figcaption>
+        </figure>
+        <figure>
+          <div class="cutout stock h-32"></div>
+          <figcaption class="mt-5 small"><b>Bottom layer · cut-out</b><br><span class="text-muted">#1B2027 · cut-out cards · --paper-cut</span></figcaption>
+        </figure>
+        <figure>
+          <div class="recess stock h-32 grid place-items-center"><span class="blind text-5xl">Aa</span></div>
+          <figcaption class="mt-5 small"><b>Bottom layer · fields</b><br><span class="text-muted">Inputs, media slots, inactive tabs · --paper-cut</span></figcaption>
+        </figure>
+        <figure>
+          <div class="h-32 grid content-center"><div class="crease"></div></div>
+          <figcaption class="mt-5 small"><b>Crease</b><br><span class="text-muted">Section and list dividers</span></figcaption>
+        </figure>
+      </div>
+
+      <!-- Logo -->
+      <h3 class="display h3 mt-20">Logo</h3>
+      <div class="mt-6 grid gap-8 md:grid-cols-2 pb-3">
+        <figure>
+          <div class="board stock grid place-items-center p-10"><img src="assets/logo-light.svg" alt="Light logo on dark ground" width="3896" height="1010" class="logo w-full max-w-[18rem] h-auto"></div>
+          <figcaption class="mt-5 small text-muted"><span class="mono">logo-light.svg</span> · default for the site</figcaption>
+        </figure>
+        <figure>
+          <div class="grid place-items-center p-10 rounded" style="background-color:#F3F1EC; box-shadow: 0 1px 0 rgba(0,0,0,.22), 0 2px 3px -1px rgba(0,0,0,.15); background-image: var(--linen); background-size:256px 256px; background-blend-mode: overlay;"><img src="assets/logo-dark.svg" alt="Dark logo on light ground" width="3896" height="1010" class="w-full max-w-[18rem] h-auto"></div>
+          <figcaption class="mt-5 small text-muted"><span class="mono">logo-dark.svg</span> · print, invoices, light contexts only</figcaption>
+        </figure>
+      </div>
+      <dl class="mt-6 grid gap-4 sm:grid-cols-3 small">
+        <div><dt class="text-muted">Header height</dt><dd class="mono mt-1">28px mobile · 36px desktop</dd></div>
+        <div><dt class="text-muted">Footer height</dt><dd class="mono mt-1">40px</dd></div>
+        <div><dt class="text-muted">Minimum height</dt><dd class="mono mt-1">28px (keeps WEB WORKS legible)</dd></div>
+      </dl>
+
+      <!-- Tokens -->
+      <h3 class="display h3 mt-20">Color tokens</h3>
+      <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+        <figure><div class="swatch stock" style="background-color:#222830"></div><figcaption class="mt-3 small"><b>bg</b> <span class="mono text-muted">#222830</span><br><span class="text-muted">Base stock and thick board</span></figcaption></figure>
+        <figure><div class="swatch stock" style="background-color:#2A313B"></div><figcaption class="mt-3 small"><b>surface</b> <span class="mono text-muted">#2A313B</span><br><span class="text-muted">Top layer: cards, header</span></figcaption></figure>
+        <figure><div class="swatch stock" style="background-color:#343C48"></div><figcaption class="mt-3 small"><b>control</b> <span class="mono text-muted">#343C48</span><br><span class="text-muted">Secondary buttons, tooltips. White text only</span></figcaption></figure>
+        <figure><div class="swatch stock" style="background-color:#1B2027"></div><figcaption class="mt-3 small"><b>cutout</b> <span class="mono text-muted">#1B2027</span><br><span class="text-muted">Cut-outs, inputs, inactive tabs</span></figcaption></figure>
+        <figure><div class="swatch stock" style="background-color:#FFFFFF"></div><figcaption class="mt-3 small"><b>fg</b> <span class="mono text-muted">#FFFFFF</span><br><span class="text-muted">Primary text</span></figcaption></figure>
+        <figure><div class="swatch stock" style="background-color:#9A9994"></div><figcaption class="mt-3 small"><b>muted</b> <span class="mono text-muted">#9A9994</span><br><span class="text-muted">Secondary text, captions, sources</span></figcaption></figure>
+        <figure><div class="swatch stock" style="background-color:#A84B30"></div><figcaption class="mt-3 small"><b>cta</b> <span class="mono text-muted">#A84B30</span><br><span class="text-muted">Button fill only</span></figcaption></figure>
+        <figure><div class="swatch stock" style="background-color:#D9844B"></div><figcaption class="mt-3 small"><b>kicker</b> <span class="mono text-muted">#D9844B</span><br><span class="text-muted">Eyebrow labels only</span></figcaption></figure>
+        <figure><div class="swatch stock" style="background-color:#BCE2E7"></div><figcaption class="mt-3 small"><b>accent</b> <span class="mono text-muted">#BCE2E7</span><br><span class="text-muted">Data visuals and data rules only</span></figcaption></figure>
+        <figure><div class="swatch stock" style="background-color:#FF6E42"></div><figcaption class="mt-3 small"><b>error</b> <span class="mono text-muted">#FF6E42</span><br><span class="text-muted">Error text only</span></figcaption></figure>
+        <figure><div class="swatch stock" style="background-color:#4EC0C6"></div><figcaption class="mt-3 small"><b>success</b> <span class="mono text-muted">#4EC0C6</span><br><span class="text-muted">Success states</span></figcaption></figure>
+        <figure><div class="swatch" style="background-color:#222830; box-shadow: inset 0 -6px 0 rgba(0,0,0,.22)"></div><figcaption class="mt-3 small"><b>paper edge</b> <span class="mono text-muted">black 22%</span><br><span class="text-muted">The 1px edge on every layer</span></figcaption></figure>
+      </div>
+
+      <!-- Type -->
+      <h3 class="display h3 mt-20">Type scale</h3>
+      <div class="mt-6 flex flex-col">
+        <div class="crease py-5 grid sm:grid-cols-[10rem_1fr] gap-2 items-baseline"><span class="mono text-muted">h1 · Forum 44–84</span><span class="display h1 min-w-0">Built to convert</span></div>
+        <div class="crease py-5 grid sm:grid-cols-[10rem_1fr] gap-2 items-baseline"><span class="mono text-muted">h2 · Forum 32–52</span><span class="display h2 min-w-0">Not decoration. Direction.</span></div>
+        <div class="crease py-5 grid sm:grid-cols-[10rem_1fr] gap-2 items-baseline"><span class="mono text-muted">h3 · Forum 26</span><span class="display h3 min-w-0">One path per page</span></div>
+        <div class="crease py-5 grid sm:grid-cols-[10rem_1fr] gap-2 items-baseline"><span class="mono text-muted">lede · Inter 17–20</span><span class="lede min-w-0">Short declarative sentences. Generous measure.</span></div>
+        <div class="crease py-5 grid sm:grid-cols-[10rem_1fr] gap-2 items-baseline"><span class="mono text-muted">body · Inter 16</span><span class="min-w-0">Body copy sits in fg; supporting copy steps down to muted.</span></div>
+        <div class="crease py-5 grid sm:grid-cols-[10rem_1fr] gap-2 items-baseline"><span class="mono text-muted">kicker · Inter 600 12</span><span class="kicker min-w-0">Eyebrow label</span></div>
+      </div>
+
+      <!-- Buttons -->
+      <h3 class="display h3 mt-20">Buttons & links</h3>
+      <div class="mt-6 grid gap-8 md:grid-cols-3">
+        <div>
+          <p class="mono text-muted">primary · cta board · one per view</p>
+          <div class="mt-4 flex flex-wrap gap-4">
+            <span class="btn btn-primary">Default <i data-lucide="arrow-right"></i></span>
+            <span class="btn btn-primary is-hover">Hover</span>
+            <span class="btn btn-primary is-press">Pressed</span>
+            <span class="btn btn-primary is-focus">Focus</span>
+          </div>
+        </div>
+        <div>
+          <p class="mono text-muted">secondary · top layer · never cta color</p>
+          <div class="mt-4 flex flex-wrap gap-4">
+            <span class="btn btn-secondary">Default</span>
+            <span class="btn btn-secondary is-hover">Hover</span>
+            <span class="btn btn-secondary is-press">Pressed</span>
+            <span class="btn btn-secondary is-focus">Focus</span>
+          </div>
+        </div>
+        <div>
+          <p class="mono text-muted">text link · inline</p>
+          <p class="mt-4">Read the <a class="link" href="#process">full process</a> before you call.</p>
+          <p class="mono text-muted mt-6">48px default · 40px sm (header)<br>1px board edge · presses 1px on click</p>
+          <p class="mono text-muted mt-6">Button focus · pressed into a 4px cut-out well + 1px white rule<br>Inputs, tabs, menu · 1px white rule<br>Links · 2px white underline<br>Tab through the page to try it</p>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <h3 class="display h3 mt-20">Inputs</h3>
+      <form class="mt-6 grid gap-8 md:grid-cols-2 lg:grid-cols-3" id="demo-form" novalidate>
+        <div class="flex flex-col gap-2">
+          <label class="field-label" for="f-default">Default</label>
+          <input class="input stock" id="f-default" placeholder="e.g. Harbourview Hotel">
+          <p class="small text-muted">Helper text in muted.</p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="field-label" for="f-filled">Filled</label>
+          <input class="input stock" id="f-filled" value="Harbourview Hotel">
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="field-label" for="f-error">Error</label>
+          <input class="input stock" id="f-error" value="owner@" aria-invalid="true" aria-describedby="f-error-err">
+          <p id="f-error-err" class="field-error"><i data-lucide="circle-alert"></i>Enter a full email address, like name@business.com.</p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="field-label" for="f-select">Select</label>
+          <select class="input select" id="f-select"><option>Law firm</option><option>Shopify brand</option></select>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="field-label" for="f-area">Textarea</label>
+          <textarea class="input textarea stock" id="f-area" placeholder="Optional details"></textarea>
+        </div>
+        <fieldset class="flex flex-col gap-3">
+          <legend class="field-label mb-2">Choices</legend>
+          <label class="choice"><input type="checkbox" checked><span>Checkbox, checked</span></label>
+          <label class="choice"><input type="checkbox"><span>Checkbox</span></label>
+          <label class="choice"><input type="radio" name="demo-r" checked><span>Radio, selected</span></label>
+          <label class="choice"><input type="radio" name="demo-r"><span>Radio</span></label>
+        </fieldset>
+      </form>
+
+      <!-- Radius / stroke -->
+      <h3 class="display h3 mt-20">Radius & stroke</h3>
+      <div class="mt-6 flex flex-wrap items-center gap-10 pb-3">
+        <div class="flex items-center gap-4"><div class="w-16 h-16 board stock"></div><span class="mono text-muted">2px · everything</span></div>
+        <div class="flex items-center gap-4 text-fg">
+          <i data-lucide="scale" class="w-8 h-8"></i><i data-lucide="landmark" class="w-8 h-8"></i><i data-lucide="briefcase" class="w-8 h-8"></i><i data-lucide="file-text" class="w-8 h-8"></i>
+          <span class="mono text-muted">Icon · white (default) · Lucide 1.5px</span>
+        </div>
+        <div class="board stock flex items-center gap-4 px-6 py-4">
+          <i data-lucide="scale" class="etched !w-8 !h-8"></i><i data-lucide="landmark" class="etched !w-8 !h-8"></i><i data-lucide="briefcase" class="etched !w-8 !h-8"></i><i data-lucide="file-text" class="etched !w-8 !h-8"></i>
+          <span class="mono text-muted">Icon · cut-in · add class="etched"</span>
+        </div>
+        <div class="flex items-center gap-4"><div class="h-12 compare"></div><span class="mono text-muted">accent rule · 1.5px</span></div>
+      </div>
+
+      <!-- Icon library -->
+      <div class="mt-20 flex flex-wrap items-end justify-between gap-4" data-spec="IconLibrary">
+        <div>
+          <h3 class="display h3">Icon library</h3>
+          <p class="body-copy mt-3">Lucide 0.453, outline, 1.5px. Use the name with <code class="mono">data-lucide</code>.</p>
+        </div>
+        <p class="mono text-muted">Each tile: white (left) · cut-in, class="etched" (right)</p>
+      </div>
+      <div id="icon-lib" class="mt-8 flex flex-col gap-12">
+        <section aria-label="Markets icons">
+          <p class="kicker">Markets</p>
+          <ul class="icon-grid mt-4 pb-1"><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="shopping-bag"></i><i data-lucide="shopping-bag" class="cut"></i></div><span>shopping-bag</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="shopping-cart"></i><i data-lucide="shopping-cart" class="cut"></i></div><span>shopping-cart</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="store"></i><i data-lucide="store" class="cut"></i></div><span>store</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="package"></i><i data-lucide="package" class="cut"></i></div><span>package</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="truck"></i><i data-lucide="truck" class="cut"></i></div><span>truck</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="scale"></i><i data-lucide="scale" class="cut"></i></div><span>scale</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="gavel"></i><i data-lucide="gavel" class="cut"></i></div><span>gavel</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="landmark"></i><i data-lucide="landmark" class="cut"></i></div><span>landmark</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="briefcase"></i><i data-lucide="briefcase" class="cut"></i></div><span>briefcase</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="bed-double"></i><i data-lucide="bed-double" class="cut"></i></div><span>bed-double</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="hotel"></i><i data-lucide="hotel" class="cut"></i></div><span>hotel</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="map"></i><i data-lucide="map" class="cut"></i></div><span>map</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="plane"></i><i data-lucide="plane" class="cut"></i></div><span>plane</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="mountain"></i><i data-lucide="mountain" class="cut"></i></div><span>mountain</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="tent-tree"></i><i data-lucide="tent-tree" class="cut"></i></div><span>tent-tree</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="ship"></i><i data-lucide="ship" class="cut"></i></div><span>ship</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="thermometer"></i><i data-lucide="thermometer" class="cut"></i></div><span>thermometer</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="fan"></i><i data-lucide="fan" class="cut"></i></div><span>fan</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="flame"></i><i data-lucide="flame" class="cut"></i></div><span>flame</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="snowflake"></i><i data-lucide="snowflake" class="cut"></i></div><span>snowflake</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="heater"></i><i data-lucide="heater" class="cut"></i></div><span>heater</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="air-vent"></i><i data-lucide="air-vent" class="cut"></i></div><span>air-vent</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="wrench"></i><i data-lucide="wrench" class="cut"></i></div><span>wrench</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="house"></i><i data-lucide="house" class="cut"></i></div><span>house</span></li></ul>
+        </section>
+        <section aria-label="Conversion & data icons">
+          <p class="kicker">Conversion & data</p>
+          <ul class="icon-grid mt-4 pb-1"><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="trending-up"></i><i data-lucide="trending-up" class="cut"></i></div><span>trending-up</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="chart-line"></i><i data-lucide="chart-line" class="cut"></i></div><span>chart-line</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="chart-column"></i><i data-lucide="chart-column" class="cut"></i></div><span>chart-column</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="gauge"></i><i data-lucide="gauge" class="cut"></i></div><span>gauge</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="target"></i><i data-lucide="target" class="cut"></i></div><span>target</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="percent"></i><i data-lucide="percent" class="cut"></i></div><span>percent</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="mouse-pointer-click"></i><i data-lucide="mouse-pointer-click" class="cut"></i></div><span>mouse-pointer-click</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="filter"></i><i data-lucide="filter" class="cut"></i></div><span>filter</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="activity"></i><i data-lucide="activity" class="cut"></i></div><span>activity</span></li></ul>
+        </section>
+        <section aria-label="Trust & proof icons">
+          <p class="kicker">Trust & proof</p>
+          <ul class="icon-grid mt-4 pb-1"><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="star"></i><i data-lucide="star" class="cut"></i></div><span>star</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="badge-check"></i><i data-lucide="badge-check" class="cut"></i></div><span>badge-check</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="shield-check"></i><i data-lucide="shield-check" class="cut"></i></div><span>shield-check</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="award"></i><i data-lucide="award" class="cut"></i></div><span>award</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="thumbs-up"></i><i data-lucide="thumbs-up" class="cut"></i></div><span>thumbs-up</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="message-square-quote"></i><i data-lucide="message-square-quote" class="cut"></i></div><span>message-square-quote</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="quote"></i><i data-lucide="quote" class="cut"></i></div><span>quote</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="users"></i><i data-lucide="users" class="cut"></i></div><span>users</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="user-check"></i><i data-lucide="user-check" class="cut"></i></div><span>user-check</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="handshake"></i><i data-lucide="handshake" class="cut"></i></div><span>handshake</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="lock"></i><i data-lucide="lock" class="cut"></i></div><span>lock</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="key-round"></i><i data-lucide="key-round" class="cut"></i></div><span>key-round</span></li></ul>
+        </section>
+        <section aria-label="Process & planning icons">
+          <p class="kicker">Process & planning</p>
+          <ul class="icon-grid mt-4 pb-1"><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="file-search"></i><i data-lucide="file-search" class="cut"></i></div><span>file-search</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="search"></i><i data-lucide="search" class="cut"></i></div><span>search</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="list-checks"></i><i data-lucide="list-checks" class="cut"></i></div><span>list-checks</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="list-ordered"></i><i data-lucide="list-ordered" class="cut"></i></div><span>list-ordered</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="clipboard-check"></i><i data-lucide="clipboard-check" class="cut"></i></div><span>clipboard-check</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="calendar-check"></i><i data-lucide="calendar-check" class="cut"></i></div><span>calendar-check</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="calendar-days"></i><i data-lucide="calendar-days" class="cut"></i></div><span>calendar-days</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="clock"></i><i data-lucide="clock" class="cut"></i></div><span>clock</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="timer"></i><i data-lucide="timer" class="cut"></i></div><span>timer</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="route"></i><i data-lucide="route" class="cut"></i></div><span>route</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="milestone"></i><i data-lucide="milestone" class="cut"></i></div><span>milestone</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="flag"></i><i data-lucide="flag" class="cut"></i></div><span>flag</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="layers"></i><i data-lucide="layers" class="cut"></i></div><span>layers</span></li></ul>
+        </section>
+        <section aria-label="Money & pricing icons">
+          <p class="kicker">Money & pricing</p>
+          <ul class="icon-grid mt-4 pb-1"><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="receipt"></i><i data-lucide="receipt" class="cut"></i></div><span>receipt</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="wallet"></i><i data-lucide="wallet" class="cut"></i></div><span>wallet</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="credit-card"></i><i data-lucide="credit-card" class="cut"></i></div><span>credit-card</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="banknote"></i><i data-lucide="banknote" class="cut"></i></div><span>banknote</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="coins"></i><i data-lucide="coins" class="cut"></i></div><span>coins</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="hand-coins"></i><i data-lucide="hand-coins" class="cut"></i></div><span>hand-coins</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="tag"></i><i data-lucide="tag" class="cut"></i></div><span>tag</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="ticket"></i><i data-lucide="ticket" class="cut"></i></div><span>ticket</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="piggy-bank"></i><i data-lucide="piggy-bank" class="cut"></i></div><span>piggy-bank</span></li></ul>
+        </section>
+        <section aria-label="Contact icons">
+          <p class="kicker">Contact</p>
+          <ul class="icon-grid mt-4 pb-1"><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="phone"></i><i data-lucide="phone" class="cut"></i></div><span>phone</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="mail"></i><i data-lucide="mail" class="cut"></i></div><span>mail</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="message-circle"></i><i data-lucide="message-circle" class="cut"></i></div><span>message-circle</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="send"></i><i data-lucide="send" class="cut"></i></div><span>send</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="map-pin"></i><i data-lucide="map-pin" class="cut"></i></div><span>map-pin</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="calendar-plus"></i><i data-lucide="calendar-plus" class="cut"></i></div><span>calendar-plus</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="video"></i><i data-lucide="video" class="cut"></i></div><span>video</span></li></ul>
+        </section>
+        <section aria-label="Web & build icons">
+          <p class="kicker">Web & build</p>
+          <ul class="icon-grid mt-4 pb-1"><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="monitor"></i><i data-lucide="monitor" class="cut"></i></div><span>monitor</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="smartphone"></i><i data-lucide="smartphone" class="cut"></i></div><span>smartphone</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="layout-template"></i><i data-lucide="layout-template" class="cut"></i></div><span>layout-template</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="code"></i><i data-lucide="code" class="cut"></i></div><span>code</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="zap"></i><i data-lucide="zap" class="cut"></i></div><span>zap</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="globe"></i><i data-lucide="globe" class="cut"></i></div><span>globe</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="link"></i><i data-lucide="link" class="cut"></i></div><span>link</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="refresh-cw"></i><i data-lucide="refresh-cw" class="cut"></i></div><span>refresh-cw</span></li></ul>
+        </section>
+        <section aria-label="Interface icons">
+          <p class="kicker">Interface</p>
+          <ul class="icon-grid mt-4 pb-1"><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="arrow-right"></i><i data-lucide="arrow-right" class="cut"></i></div><span>arrow-right</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="arrow-up-right"></i><i data-lucide="arrow-up-right" class="cut"></i></div><span>arrow-up-right</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="external-link"></i><i data-lucide="external-link" class="cut"></i></div><span>external-link</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="check"></i><i data-lucide="check" class="cut"></i></div><span>check</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="circle-check"></i><i data-lucide="circle-check" class="cut"></i></div><span>circle-check</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="x"></i><i data-lucide="x" class="cut"></i></div><span>x</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="plus"></i><i data-lucide="plus" class="cut"></i></div><span>plus</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="minus"></i><i data-lucide="minus" class="cut"></i></div><span>minus</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="chevron-down"></i><i data-lucide="chevron-down" class="cut"></i></div><span>chevron-down</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="menu"></i><i data-lucide="menu" class="cut"></i></div><span>menu</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="info"></i><i data-lucide="info" class="cut"></i></div><span>info</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="circle-alert"></i><i data-lucide="circle-alert" class="cut"></i></div><span>circle-alert</span></li><li class="board stock icon-tile"><div class="flex items-center gap-5"><i data-lucide="copy"></i><i data-lucide="copy" class="cut"></i></div><span>copy</span></li></ul>
+        </section>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="mobile-cta stock" data-spec="MobileCtaBar">
+  <div class="mobile-cta-inner"><span class="small font-semibold">Fixed-fee audit</span><a class="btn btn-primary btn-sm !mb-0" href="#book">Book now</a></div>
+</div>
+
+<script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  // Markets: single source for the desktop tabs and the phone accordion
+  const MARKETS = [
+    { id: 'shopify', icon: 'shopping-bag', name: 'Shopify brands', who: 'DTC and B2B stores, any category.', measure: 'Revenue per visitor',
+      fixes: ['Wholesale ordering on Shopify B2B', 'Conversion leaks in product and cart pages', 'Replatforming to Shopify'] },
+    { id: 'law', icon: 'scale', name: 'Law firms', who: 'Small firms, family and estate law first.', measure: 'Qualified consultations',
+      fixes: ['Intake that sorts serious enquiries', 'Online consultation booking', 'Fees explained before the first call'] },
+    { id: 'hotels', icon: 'bed-double', name: 'Hotels & tours', who: 'Independent hotels and tour operators, hotels first.', measure: 'Direct booking share',
+      fixes: ['Direct bookings over OTAs', 'Best-rate message on every room page', 'Prices and reviews beside the book button'] },
+    { id: 'hvac', icon: 'thermometer', name: 'HVAC', who: 'Small owner-run shops.', measure: 'Booked service calls',
+      fixes: ['Online service-call booking', 'Review proof near every call to action', 'Seasonal offers that fill the calendar'] },
+  ];
+  const fixList = (m, cls) => m.fixes.map(f => `<li class="crease ${cls} flex gap-3 text-fg"><i data-lucide="check" class="w-5 h-5 shrink-0 mt-0.5"></i><span>${f}</span></li>`).join('');
+  const auditBtn = m => `<a class="btn btn-secondary btn-sm" href="#book">See the ${m.name.split(' ')[0].toLowerCase()} audit <i data-lucide="arrow-right"></i></a>`;
+  document.getElementById('market-tabs').innerHTML = MARKETS.map((m, i) =>
+    `<button class="tab stock" role="tab" id="tab-${m.id}" aria-controls="panel-${m.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" type="button"><i data-lucide="${m.icon}"></i>${m.name}</button>`).join('');
+  document.getElementById('market-panels').innerHTML = MARKETS.map((m, i) => `
+    <div class="board stock card tab-panel grid gap-[var(--card-pad)] md:grid-cols-12" role="tabpanel" id="panel-${m.id}" aria-labelledby="tab-${m.id}" tabindex="0"${i ? ' hidden' : ''}>
+      <div class="md:col-span-5 min-w-0">
+        <h3 class="display text-[2rem] leading-tight">${m.name}</h3>
+        <p class="text-muted mt-[var(--card-tight)]">${m.who}</p>
+        <p class="kicker mt-[var(--card-pad)]">Measured by</p>
+        <p class="display text-2xl mt-2">${m.measure}</p>
+      </div>
+      <div class="md:col-span-7 min-w-0">
+        <p class="small text-muted">Fixed first</p>
+        <ul class="mt-4 flex flex-col">${fixList(m, 'py-4')}</ul>
+        <div class="mt-6">${auditBtn(m)}</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('market-acc').innerHTML = MARKETS.map((m, i) => `
+    <details${i ? '' : ' open'}>
+      <summary><span class="flex items-center gap-3"><i data-lucide="${m.icon}"></i>${m.name}</span><i data-lucide="plus"></i></summary>
+      <div class="answer stock flex flex-col gap-[var(--card-pad)]">
+        <div>
+          <p>${m.who}</p>
+          <p class="kicker mt-[var(--card-pad)]">Measured by</p>
+          <p class="display text-2xl text-fg mt-2">${m.measure}</p>
+        </div>
+        <ul class="flex flex-col">${fixList(m, 'py-3')}</ul>
+        <div>${auditBtn(m)}</div>
+      </div>
+    </details>`).join('');
+
+  // Desktop Markets submenu
+  document.getElementById('mega-cards').innerHTML = MARKETS.map(m => `
+    <a class="mega-card stock" href="#markets"><i data-lucide="${m.icon}"></i><span class="name">${m.name}</span><span class="small">Measured by ${m.measure.toLowerCase()}</span></a>`).join('');
+
+  if (window.lucide) lucide.createIcons({ attrs: { 'stroke-width': 1.5 } });
+
+  // Mobile menu
+  const menuBtn = document.getElementById('menu-btn');
+  const mobileNav = document.getElementById('mobile-nav');
+  // Motion follows paper: pieces slide out from under the layer above; nothing fades or pops in.
+  const still = !window.gsap || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sheet = mobileNav.querySelector('.drawer-sheet');
+  function setMenu(open) {
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    menuBtn.querySelector('.icon-open').hidden = open;
+    menuBtn.querySelector('.icon-close').hidden = !open;
+    if (still) { mobileNav.hidden = !open; return; }
+    gsap.killTweensOf(sheet);
+    if (open) {
+      mobileNav.hidden = false;
+      gsap.fromTo(sheet, { xPercent: 100 }, { xPercent: 0, duration: .45, ease: 'power2.out' });
+    } else {
+      gsap.to(sheet, { xPercent: 100, duration: .35, ease: 'power2.in', onComplete: () => { mobileNav.hidden = true; } });
+    }
+  }
+  menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
+  mobileNav.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
+  const menuOpen = () => menuBtn.getAttribute('aria-expanded') === 'true';
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen()) { setMenu(false); menuBtn.focus(); } });
+  document.addEventListener('click', e => { if (menuOpen() && !sheet.contains(e.target) && !menuBtn.contains(e.target)) setMenu(false); });
+
+  // Desktop submenu: click, Enter/Space, or a 150ms hover opens; Escape, leaving focus, or 300ms after the pointer leaves closes
+  const megaBtn = document.getElementById('mega-btn');
+  const mega = document.getElementById('mega');
+  const megaSheet = mega.querySelector('.mega-sheet');
+  let megaOpenT, megaCloseT;
+  const megaIsOpen = () => megaBtn.getAttribute('aria-expanded') === 'true';
+  function setMega(open) {
+    clearTimeout(megaOpenT); clearTimeout(megaCloseT);
+    if (open === megaIsOpen()) return;
+    megaBtn.setAttribute('aria-expanded', String(open));
+    if (still) { mega.hidden = !open; return; }
+    gsap.killTweensOf(megaSheet);
+    if (open) {
+      mega.hidden = false;
+      gsap.fromTo(megaSheet, { yPercent: -100 }, { yPercent: 0, duration: .4, ease: 'power2.out' });
+    } else {
+      gsap.to(megaSheet, { yPercent: -100, duration: .3, ease: 'power2.in', onComplete: () => { mega.hidden = true; } });
+    }
+  }
+  megaBtn.addEventListener('click', () => setMega(!megaIsOpen()));
+  [megaBtn, megaSheet].forEach(el => {
+    el.addEventListener('mouseenter', () => { clearTimeout(megaCloseT); if (!megaIsOpen()) megaOpenT = setTimeout(() => setMega(true), 150); });
+    el.addEventListener('mouseleave', () => { clearTimeout(megaOpenT); megaCloseT = setTimeout(() => setMega(false), 300); });
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && megaIsOpen()) { setMega(false); megaBtn.focus(); } });
+  document.addEventListener('focusin', e => { if (megaIsOpen() && !megaBtn.contains(e.target) && !megaSheet.contains(e.target)) setMega(false); });
+  megaSheet.addEventListener('click', e => { if (e.target.closest('a')) setMega(false); });
+
+  // Accordions: the answer slides out from under its strip, and back under on close
+  document.querySelectorAll('.faq details').forEach(d => {
+    const summary = d.querySelector('summary');
+    const ans = d.querySelector('.answer');
+    summary.addEventListener('click', e => {
+      if (still) return;
+      e.preventDefault();
+      gsap.killTweensOf([ans, ans.children]);
+      if (!d.open) {
+        d.open = true;
+        gsap.fromTo(ans, { height: 0 }, { height: 'auto', duration: .5, ease: 'power2.out', clearProps: 'height' });
+        gsap.fromTo(ans.children, { y: -24 }, { y: 0, duration: .5, ease: 'power2.out', clearProps: 'transform' });
+      } else {
+        gsap.to(ans.children, { y: -24, duration: .35, ease: 'power2.in' });
+        gsap.to(ans, { height: 0, duration: .35, ease: 'power2.in', onComplete: () => { d.open = false; gsap.set([ans, ans.children], { clearProps: 'all' }); } });
+      }
+    });
+  });
+
+  // Cards are laid onto the page as they scroll in: a few px above the surface, settling with their shadow tightening
+  if (!still && 'IntersectionObserver' in window) {
+    const settle = new IntersectionObserver(entries => entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      settle.unobserve(en.target);
+      gsap.from(en.target, { y: -8, boxShadow: '0 1px 0 rgba(0,0,0,.22), 0 14px 18px -8px rgba(0,0,0,.3)', duration: 1, ease: 'power2.out', clearProps: 'transform,boxShadow' });
+    }), { rootMargin: '0px 0px -8% 0px' });
+    requestAnimationFrame(() => document.querySelectorAll('#main .card, #main .sheet, #components .card, #components .sheet').forEach(el => {
+      if (el.getBoundingClientRect().top > innerHeight) settle.observe(el);
+    }));
+  }
+
+  // Mobile CTA bar slides up from below the screen edge once the hero has scrolled away
+  const mobileCta = document.querySelector('.mobile-cta:not(.is-preview)');
+  const toggleCta = () => mobileCta.classList.toggle('is-shown', scrollY > 480);
+  addEventListener('scroll', toggleCta, { passive: true }); toggleCta();
+
+  // Footer copy buttons
+  document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => {
+    const el = document.getElementById(b.dataset.copy);
+    const status = document.getElementById('copy-status');
+    const done = () => { status.textContent = 'Copied: ' + el.textContent; };
+    const fallback = () => { const range = document.createRange(); range.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(range); status.textContent = 'Selected. Press Ctrl+C or Cmd+C to copy.'; };
+    try { navigator.clipboard.writeText(el.textContent).then(done, fallback); } catch (e) { fallback(); }
+  }));
+
+  // Spec overlay
+  const page = document.getElementById('page');
+  const specBtn = document.getElementById('spec-toggle');
+  specBtn.addEventListener('click', () => {
+    const on = page.classList.toggle('spec-on');
+    specBtn.setAttribute('aria-pressed', String(on));
+    specBtn.textContent = 'Component names: ' + (on ? 'on' : 'off');
+  });
+
+  // Market tabs
+  const tabEls = [...document.querySelectorAll('[role="tab"]')];
+  function selectTab(t, focus) {
+    tabEls.forEach(x => {
+      const on = x === t;
+      x.setAttribute('aria-selected', String(on));
+      x.tabIndex = on ? 0 : -1;
+      document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
+    });
+    if (focus) t.focus();
+  }
+  tabEls.forEach((t, i) => {
+    t.addEventListener('click', () => selectTab(t));
+    t.addEventListener('keydown', e => {
+      const n = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabEls.length - 1 }[e.key];
+      if (n === undefined) return;
+      e.preventDefault();
+      selectTab(tabEls[(n + tabEls.length) % tabEls.length], true);
+    });
+  });
+
+  // Booking form: required-field check with vermilion errors
+  const bookForm = document.getElementById('book-form');
+  const msgs = { name: 'Enter your name.', email: 'Enter a full email address, like name@business.com.', site: 'Enter your website address, starting with https://', market: 'Choose a business type.' };
+  function showError(field, text) {
+    const holder = field.parentElement;
+    let err = holder.querySelector('.field-error');
+    if (!text) { field.removeAttribute('aria-invalid'); field.removeAttribute('aria-describedby'); err && err.remove(); return; }
+    if (!err) {
+      err = document.createElement('p'); err.className = 'field-error'; err.id = field.id + '-err';
+      err.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg><span></span>';
+      holder.appendChild(err);
+    }
+    err.querySelector('span').textContent = text;
+    field.setAttribute('aria-invalid', 'true'); field.setAttribute('aria-describedby', err.id);
+  }
+  bookForm.addEventListener('submit', e => {
+    e.preventDefault();
+    let first = null;
+    Object.keys(msgs).forEach(n => {
+      const f = bookForm.elements[n];
+      const bad = !f.value.trim() || (f.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.value)) || (n === 'site' && !/^https?:\/\/\S+\.\S+/.test(f.value));
+      showError(f, bad ? msgs[n] : '');
+      if (bad && !first) first = f;
+    });
+    const status = document.getElementById('book-status');
+    if (first) { first.focus(); status.className = 'small text-muted'; status.textContent = 'Check the highlighted fields.'; return; }
+    status.className = 'small ok-text font-semibold'; status.textContent = 'Looks good. In the live site this sends your request (demo: nothing was sent).';
+  });
+
+  document.getElementById('demo-form').addEventListener('submit', e => e.preventDefault());
+</script>
+</body></html>

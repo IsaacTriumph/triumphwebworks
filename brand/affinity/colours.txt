@@ -1,0 +1,15 @@
+TWW Base Dark	#222830
+TWW Card Raised	#2A313B
+TWW Card Cutout	#1B2027
+TWW White	#FFFFFF
+TWW Text on Dark	#FFFFFF
+TWW Muted on Dark	#9A9994
+TWW Kicker on Dark	#D9844B
+TWW Ink on White	#222830
+TWW Muted on White	#5F5E59
+TWW Kicker on White	#9C4A22
+TWW CTA	#A84B30
+TWW CTA Edge	#7A3622
+TWW Accent Data	#BCE2E7
+TWW Error	#FF6E42
+TWW Success	#4EC0C6

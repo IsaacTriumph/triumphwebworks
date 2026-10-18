@@ -1,0 +1,160 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>
+<title>Document Style Sample</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Forum&family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+  /* Layout: two US Letter pages of plain white stock, styled with textured cards in the site's dark paper layers. */
+  :root {
+    /* White stock: light documents. No texture on white; texture lives on the coloured cards. */
+    --paper: #FFFFFF;
+    --edge: rgba(0,0,0,.14); /* the 1px paper edge on white; no shadows in print */
+    --ink: #222830;          /* body text on white, 14.9:1 */
+    --ink-muted: #5F5E59;    /* secondary text on white, 6.5:1 */
+    --kicker: #9C4A22;       /* eyebrow labels on white, 6.2:1 */
+    /* Textured cards: the site's paper layers, with the site's text colours */
+    --card: #2A313B;         /* raised card (top layer) */
+    --card-cut: #1B2027;     /* cut-out card (bottom layer) */
+    --on-card: #FFFFFF;
+    --on-card-muted: #9A9994;
+    --on-card-kicker: #D9844B;
+    --cta: #A84B30;          /* button fill only, white label */
+    /* Dark stock: the desk the pages sit on (site tokens) */
+    --desk: #222830;
+    --desk-muted: #9A9994;
+    --display: Forum, Georgia, "Times New Roman", serif;
+    --body: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: dark;
+  }
+  body {
+    margin: 0; background-color: var(--desk); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.6;
+    background-image: url("assets/linen-dark-tile.png");
+  }
+  .desk { padding-block: 48px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex; flex-direction: column; align-items: center; gap: 40px; }
+  .note { max-width: 816px; width: 100%; color: var(--desk-muted); font-size: 13px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+  .note b { color: #fff; font-weight: 600; }
+
+  .page {
+    width: 100%; max-width: 816px; aspect-ratio: 8.5 / 11; min-height: min-content; box-sizing: border-box;
+    padding: clamp(28px, 9%, 72px); display: flex; flex-direction: column;
+    background-color: var(--paper);
+    border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.35), 0 10px 24px -10px rgba(0,0,0,.45);
+  }
+  /* Dark textured stock: covers and heading cards. Site text colours apply. */
+  .page.dark, .head-card { background-color: var(--desk); background-image: url("assets/linen-dark-tile.png"); color: var(--on-card); }
+  .page.dark h1, .head-card h2 { color: var(--on-card); }
+  .page.dark .kicker, .head-card .kicker { color: var(--on-card-kicker); }
+  .page.dark .cover-main .lede, .head-card .muted { color: var(--on-card-muted); }
+  .page.dark .meta.card { box-shadow: 0 1px 0 rgba(0,0,0,.45); }
+  .head-card { padding: 28px 28px 30px; border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.45); display: flex; flex-direction: column; gap: 12px; }
+  .kicker { font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--kicker); margin: 0; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 400; margin: 0; text-wrap: balance; color: var(--ink); }
+  h1 { font-size: clamp(36px, 7vw, 56px); line-height: 1.05; }
+  h2 { font-size: clamp(26px, 4.4vw, 34px); line-height: 1.12; }
+  h3 { font-size: 20px; line-height: 1.25; }
+  p { margin: 0; }
+  .muted { color: var(--ink-muted); }
+  .small { font-size: 13px; }
+  .crease { border-top: 1px solid var(--edge); }
+
+  /* Cover */
+  .cover-logo { width: 190px; max-width: 60%; height: auto; display: block; }
+  .cover-main { margin-top: auto; padding-block: 40px; display: flex; flex-direction: column; gap: 20px; }
+  .cover-main .lede { font-size: 17px; color: var(--ink-muted); max-width: 46ch; }
+  .meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .meta.card { padding: 22px 24px; border-radius: 2px; }
+  .meta dt { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+  .meta dd { margin: 4px 0 0; font-weight: 600; }
+
+  /* Interior */
+  .running { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; }
+  .running img { width: 96px; height: auto; }
+  .stack { display: flex; flex-direction: column; gap: 28px; padding-top: 32px; }
+  .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .panel { padding: 22px 24px; border-radius: 2px; display: flex; flex-direction: column; gap: 8px; }
+  .panel.raised, .panel.cut, .meta.card { color: var(--on-card); }
+  .panel.raised, .meta.card { background-color: var(--card); background-image: url("assets/linen-surface-tile.png"); box-shadow: 0 1px 0 rgba(0,0,0,.45); } /* laid on: edge below */
+  .panel.cut { background-color: var(--card-cut); background-image: url("assets/linen-cutout-tile.png"); box-shadow: inset 0 1px 0 rgba(0,0,0,.6); } /* cut in: edge on the inner top wall */
+  .panel .kicker, .meta.card dt { color: var(--on-card-kicker); }
+  .panel .muted { color: var(--on-card-muted); }
+  .fee { font-family: var(--display); font-size: 34px; line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); padding: 0 0 10px; }
+  td { padding: 12px 0; border-top: 1px solid var(--edge); vertical-align: top; }
+  td:last-child, th:last-child { text-align: right; white-space: nowrap; padding-left: 16px; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 20px; border-radius: 2px; background-color: var(--cta);
+    color: #fff; font-weight: 600; font-size: 14px; box-shadow: 0 1px 0 #7A3622; text-decoration: none; align-self: flex-start; }
+  .page-foot { margin-top: auto; padding-top: 14px; display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-muted); }
+  .icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+  @media (max-width: 560px) {
+    .page { aspect-ratio: auto; }
+    .meta, .two { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="desk">
+  <p class="note"><span><b>Documents</b> · US Letter · dark textured covers and heading cards, plain white for everything else</span><span>Sample layout. Bracketed text is placeholder.</span></p>
+
+  <!-- Page 1: cover -->
+  <article class="page dark" aria-label="Page 1, cover">
+    <img class="cover-logo" src="assets/logo-light.svg" alt="Triumph Web Works" width="3896" height="1010">
+    <div class="cover-main">
+      <p class="kicker">Proposal · Conversion audit</p>
+      <h1>A conversion audit for [Client business]</h1>
+      <p class="lede">Where your website loses bookings and enquiries, what each leak costs, and the order I'd fix them in.</p>
+    </div>
+    <dl class="meta card">
+      <div><dt>Prepared for</dt><dd>[Client name]</dd></div>
+      <div><dt>Prepared by</dt><dd>[Your name]</dd></div>
+      <div><dt>Date</dt><dd>[Month Day, Year]</dd></div>
+    </dl>
+  </article>
+
+  <!-- Page 2: interior -->
+  <article class="page" aria-label="Page 2, scope and fee">
+    <div class="running crease" style="border-top:0; border-bottom:1px solid var(--edge)">
+      <img src="assets/logo-dark.svg" alt="Triumph Web Works" width="3896" height="1010">
+      <span class="small muted">Proposal · [Client business]</span>
+    </div>
+
+    <div class="stack">
+      <div class="head-card">
+        <p class="kicker">Scope</p>
+        <h2>What the audit covers</h2>
+      </div>
+      <div>
+        <p class="muted" style="max-width:60ch">I review the pages that earn the money, rank every leak by what it costs you, and hand you a written plan you can act on with or without me.</p>
+      </div>
+
+      <table>
+        <thead><tr><th scope="col">Deliverable</th><th scope="col">Timing</th></tr></thead>
+        <tbody>
+          <tr><td>Decision-path review of your key pages</td><td>[Week 1]</td></tr>
+          <tr><td>Leaks ranked by revenue at stake</td><td>[Week 2]</td></tr>
+          <tr><td>Written plan and walkthrough call</td><td>[Week 2]</td></tr>
+        </tbody>
+      </table>
+
+      <div class="two">
+        <div class="panel raised">
+          <p class="kicker">Fixed fee</p>
+          <p class="fee">[Amount]</p>
+          <p class="small muted">[Currency], agreed up front. It doesn't change with what the audit finds.</p>
+        </div>
+        <div class="panel cut">
+          <p class="kicker">What happens next</p>
+          <p class="small">You choose: run with the plan yourself, book a fix sprint, or scope a renovation. There's no obligation to continue.</p>
+        </div>
+      </div>
+
+      <a class="btn" href="#">Approve and book a start date
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+    </div>
+
+    <div class="page-foot crease"><span>Triumph Web Works</span><span>2 of 2</span></div>
+  </article>
+</div>
+</body></html>
