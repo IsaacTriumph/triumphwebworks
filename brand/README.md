@@ -12,6 +12,7 @@ Assets and references for the paper design system. No site code depends on these
 | `brand/reference/documents/index.html` | Document style sample: dark textured cover and heading cards, plain white body. |
 | `brand/brand-guide.md` | Brand guide v2.0 (Registry key BRAND_TRIUMPH). Replaces v1.3 in the Project files. |
 | `brand/brand-tokens.css` | Exact tokens, paper variables and component CSS from the kit. |
+| `brand/icons/` | 98 Lucide icons used in the kit, exported as SVG at 1.5px stroke. |
 | `brand/document-components.css` | Document page styles and components (key message, statement band, steps, quotes, options, flow, chart, images, footnotes). |
 
 Live versions of the references:
