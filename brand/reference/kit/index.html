@@ -108,7 +108,8 @@
   .tcard-row { flex-direction: row; align-items: flex-start; gap: var(--card-tight); column-gap: 1.25rem; }
   .tcard-row svg.lucide { flex-shrink: 0; margin-top: .125rem; margin-bottom: 0 !important; }
   /* Etched icon: same blind-stamp ink as the step numbers. Decorative only; the title carries the meaning. */
-  .tcard svg.lucide.etched, svg.lucide.etched { color: rgba(0,0,0,.32); width: 3rem; height: 3rem; stroke-width: 1.5px;
+  /* Cut-in strokes run heavier than white ones: dark ink on dark paper reads thinner at the same width. */
+  .tcard svg.lucide.etched, svg.lucide.etched { color: rgba(0,0,0,.32); width: 3rem; height: 3rem; stroke-width: 1.75px;
     filter: drop-shadow(0 1px 0 rgba(255,255,255,.08)) drop-shadow(0 -1px 0 rgba(0,0,0,.35)); }
   .crease { border-top: 1px solid rgba(0,0,0,.32); }
 
@@ -348,7 +349,7 @@
   .icon-tile { display: flex; flex-direction: column; align-items: center; gap: .75rem; padding: 1.25rem .5rem 1rem; text-align: center; }
   .icon-tile svg { width: 2rem; height: 2rem; }
   .icon-tile span { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .6875rem; color: var(--muted); overflow-wrap: anywhere; }
-  .icon-tile svg.cut { color: rgba(0,0,0,.32); filter: drop-shadow(0 1px 0 rgba(255,255,255,.08)) drop-shadow(0 -1px 0 rgba(0,0,0,.35)); }
+  .icon-tile svg.cut { stroke-width: 2px; color: rgba(0,0,0,.32); filter: drop-shadow(0 1px 0 rgba(255,255,255,.08)) drop-shadow(0 -1px 0 rgba(0,0,0,.35)); }
 
   /* Market tabs become an accordion on phones */
   @media (max-width: 767px) { #markets .tabs, #markets [role="tabpanel"] { display: none !important; } }
